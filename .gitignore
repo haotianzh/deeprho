@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# popgen related 
+deeprho/popgen/__pycache__/
+
+# pycharm
+.idea/

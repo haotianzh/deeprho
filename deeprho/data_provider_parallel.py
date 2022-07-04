@@ -1,6 +1,7 @@
 import os
 import time
-import popgen
+import logging
+from deeprho import popgen
 import argparse
 import numpy as np
 import pickle
@@ -55,13 +56,14 @@ def recombination_rate_const_interpolation(nsam, i, rmin, rmax):
     return rate
 
 def save_training_data(path, data):
+    assert path is not None, f'no file provided.'
     assert not os.path.exists(path), f'file has already existed.'
     x, y = data
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
     with open(path, mode='wb') as out:
         pickle.dump((x_train, x_test, y_train, y_test), out)
-    print(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
-    print(f'training data has been stored in {args.out}')
+    logging.info(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
+    logging.info(f'training data has been stored in {args.out}')
 
 def simulate(configs, args, r):
     haplotypes = []
@@ -70,7 +72,7 @@ def simulate(configs, args, r):
     configs['recombination_rate'] = r
     simulator = popgen.Simulator(configs)
     for data in simulator(args.npop, 1):
-        print(f'sampling in {r}, {data}')
+        logging.info(f'sampling in {r}, {data}')
         data = popgen.utils.filter_replicate(data)
         reps = popgen.utils.cut_replicate(data, window_size=global_window_size)
         haps = [rep.haplotype for rep in reps]
@@ -87,9 +89,11 @@ def simulate(configs, args, r):
     return haplotypes, genealogies, rhos
 
 
-def main(args):
-    print(f'----------- simulation -------------')
-    print(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
+def run(args):
+    assert args.out is not None, f'no output name.'
+    assert args.rmax >= args.rmin, f'r_max should be greater than r_min.'
+    logging.info(f'----------- simulation -------------')
+    logging.info(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
     pool = Pool(args.num_thread // 2)
     haplotypes = []
     genealogies = []
@@ -116,10 +120,7 @@ def main(args):
     rhos = np.array(rhos).reshape(-1,1)
     save_training_data(args.out, (data, rhos))
     
-
-if __name__ == '__main__':
-    mp.freeze_support()
-    parser = argparse.ArgumentParser('data simulator')
+def gt_args(parser):
     parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=10)
     parser.add_argument('--ndraw', type=int, help='number of draws per sample', default=5)
     parser.add_argument('--npop', type=int, help='number of haplotypes', default=100)
@@ -129,13 +130,18 @@ if __name__ == '__main__':
     parser.add_argument('--demography', type=str, help='demography file path', default=None)
     parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=1e-10)
     parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=1e-8)
-    parser.add_argument('--num_thread', type=int, help='number of threads', default=mp.cpu_count()-2)
+    parser.add_argument('--num_thread', type=int, help='number of threads', default=mp.cpu_count() - 2)
     parser.add_argument('--out', type=str, help='output path')
+
+
+if __name__ == '__main__':
+    logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
+                        level=logging.INFO,
+                        datefmt='%m/%d %I:%M:%S')
+    parser = argparse.ArgumentParser('data simulator')
+    gt_args(parser)
     args = parser.parse_args()
-    print(args)
-    start = time.time()
-    main(args)
-    end = time.time()
-    print(f'running time: {end-start}')
+    run(args)
+
 
     

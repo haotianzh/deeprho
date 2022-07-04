@@ -1,8 +1,8 @@
 import os
-import popgen
 import jpype
 import jpype.imports
 from jpype.types import *
+from ... import popgen
 from .treeutils import *
 from .utils import *
 from .readers import *

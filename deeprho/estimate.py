@@ -8,10 +8,9 @@ import matplotlib.pyplot as plt
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 import tensorflow as tf
 # import popgen related lib
-import popgen
-from popgen.utils import load_vcf_from_file, load_ms_from_file
-from popgen.utils import filter_none_mutation, sliding_windows, stat
-from popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequilibrium
+from deeprho.popgen.utils import load_vcf_from_file, load_ms_from_file
+from deeprho.popgen.utils import filter_none_mutation, sliding_windows, stat
+from deeprho.popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequilibrium
 
 # how much the scaling for rate during training. 10 means 10x
 scaling_factor = 10
@@ -29,12 +28,13 @@ def get_deeprho_map(rates, bounds, length):
     for i, r in enumerate(per_site_rates):
         if r:
             crates[i] = np.mean(r)
-            if len(r) == 2:
-                crates[i] = np.dot(np.array(r), np.array([0.3,0.7]))
+            # if len(r) == 2:
+            #     crates[i] = np.dot(np.array(r), np.array([0.3,0.7]))
     return crates
 
 
 def load_data(file):
+    assert file is not None, f'no file provided.'
     _extensions = {'.ms': load_ms_from_file, '.vcf': load_vcf_from_file}
     ext = pathlib.Path(file).suffix
     assert ext in _extensions, f'only {_extensions} formats are supported.'
@@ -66,7 +66,6 @@ def plot(rates, threshold, out_name):
 def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_size=50,
              sequence_length=None, global_window_size=1000, n_pop=100, ploidy=1, ne=1e5,
              resolution=1e4, threshold=5e-8, num_thread=4):
-    assert os.path.exists(model_fine_path) and os.path.exists(model_large_path), f'model file not found.'
     haplotype = filter_none_mutation(haplotype)
     haplotypes = sliding_windows(haplotype,
                                  window_size=window_size,
@@ -126,11 +125,12 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     return r_fine
 
 
-def run():
-    args = gt_args()
+def run(args):
     logging.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)
     logging.debug(f'data: {haplotype.nsites} SNPs, {haplotype.nsamples} individuals')
+    assert args.m1 is not None and args.m2 is not None, f'no specified models.'
+    assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
     paras = {
         'haplotype': haplotype,
         'num_thread': args.num_thread,
@@ -147,10 +147,9 @@ def run():
     }
     rates = estimate(**paras)
     out_prefix = pathlib.Path(args.file).name.split('.')[0]
+    out_name = args.out
     if args.out is None:
         out_name = out_prefix + '_out.txt'
-    else:
-        out_name = args.out
     output(rates, out_name)
     if args.savenp:
         np.save(out_prefix + '_out.npy', rates)
@@ -159,11 +158,10 @@ def run():
         plot(rates, args.threshold, out_prefix + '_out.png')
 
 
-def gt_args():
-    model_default_dir = pathlib.Path(popgen.__file__).parent.parent.joinpath('models')
-    model_fine_default_path = model_default_dir.joinpath('model_fine.hdf5')
-    model_large_default_path = model_default_dir.joinpath('model_large.hdf5')
-    parser = argparse.ArgumentParser(description='deeprho estimator')
+def gt_args(parser):
+    # model_default_dir = pathlib.Path(popgen.__file__).parent.parent.joinpath('models')
+    # model_fine_default_path = model_default_dir.joinpath('model_fine.hdf5')
+    # model_large_default_path = model_default_dir.joinpath('model_large.hdf5')
     parser.add_argument('--file', type=str, help='filename')
     parser.add_argument('--num-thread', type=int, help='number of threads', default=4)
     parser.add_argument('--ne', type=float, help='effective population size', default=1e5)
@@ -173,17 +171,18 @@ def gt_args():
     parser.add_argument('--gws', type=int, help='global window size', default=1000)
     parser.add_argument('--ws', type=int, help='window size', default=50)
     parser.add_argument('--ss', type=int, help='step size', default=50)
-    parser.add_argument('--m1', type=str, help='fine-model path', default=model_fine_default_path)
-    parser.add_argument('--m2', type=str, help='large-model path', default=model_large_default_path)
+    parser.add_argument('--m1', type=str, help='fine-model path', default=None)
+    parser.add_argument('--m2', type=str, help='large-model path', default=None)
     parser.add_argument('--out', type=str, help='output name', default=None)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
-    args = parser.parse_args()
-    return args
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='[deeprho_v2] %(levelname)s %(asctime)s - %(message)s',
+    logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
                         level=logging.INFO,
                         datefmt='%m/%d %I:%M:%S')
-    run()
+    parser = argparse.ArgumentParser(description='deeprho estimator')
+    gt_args(parser)
+    args = parser.parse_args()
+    run(args)
