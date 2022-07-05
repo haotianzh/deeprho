@@ -40,7 +40,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
 
 ### Docs
 - #### Estimate
-  ```python
+  ```shell
     deeprho estimate [-h] [--file FILE] [--length LENGTH] [--ne NE] [--ploidy PLOIDY] [--res RES] \
                       [--threshold THRESHOLD] [--gws GWS] [--ws WS] [--ss SS] [--m1 MODEL_FINE] \
                       [--m2 MODEL_LARGE] [--plot] [--savenp] [--num-thread NUM_THREAD]  
