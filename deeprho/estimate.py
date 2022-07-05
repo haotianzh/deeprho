@@ -34,7 +34,6 @@ def get_deeprho_map(rates, bounds, length):
 
 
 def load_data(file):
-    assert file is not None, f'no file provided.'
     _extensions = {'.ms': load_ms_from_file, '.vcf': load_vcf_from_file}
     ext = pathlib.Path(file).suffix
     assert ext in _extensions, f'only {_extensions} formats are supported.'
@@ -126,36 +125,43 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
 
 
 def run(args):
+    assert args.file is not None, f'no input provided.'
+    assert args.m1 is not None and args.m2 is not None, f'no specified models.'
+    assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
+
     logging.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)
     logging.debug(f'data: {haplotype.nsites} SNPs, {haplotype.nsamples} individuals')
-    assert args.m1 is not None and args.m2 is not None, f'no specified models.'
-    assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
+    length = args.length
+    if length is None:
+        length = haplotype.positions[-1] - haplotype.positions[0]
+    step_size = args.ss
+    if step_size is None:
+        step_size = args.ws
+
     paras = {
         'haplotype': haplotype,
         'num_thread': args.num_thread,
-        'sequence_length': args.length,
+        'sequence_length': length,
         'ne': args.ne,
         'global_window_size': args.gws,
         'window_size': args.ws,
-        'step_size': args.ss,
+        'step_size': step_size,
         'threshold': args.threshold,
         'model_fine_path': args.m1,
         'model_large_path': args.m2,
         'ploidy': args.ploidy,
         'n_pop': haplotype.nsamples,
+        'resolution': args.res
     }
     rates = estimate(**paras)
     out_prefix = pathlib.Path(args.file).name.split('.')[0]
-    out_name = args.out
-    if args.out is None:
-        out_name = out_prefix + '_out.txt'
-    output(rates, out_name)
+    output(rates, out_prefix+'.out.txt')
     if args.savenp:
-        np.save(out_prefix + '_out.npy', rates)
-        print(f"numpy object is saved as '{out_name}'")
+        np.save(out_prefix + '.out.npy', rates)
+        print(f"numpy object is saved as '{out_prefix + '.out.npy'}'")
     if args.plot:
-        plot(rates, args.threshold, out_prefix + '_out.png')
+        plot(rates, args.threshold, out_prefix + '.out.png')
 
 
 def gt_args(parser):
@@ -170,10 +176,10 @@ def gt_args(parser):
     parser.add_argument('--threshold', type=float, help='hotspot threshold', default=5e-8)
     parser.add_argument('--gws', type=int, help='global window size', default=1000)
     parser.add_argument('--ws', type=int, help='window size', default=50)
-    parser.add_argument('--ss', type=int, help='step size', default=50)
+    parser.add_argument('--ss', type=int, help='step size', default=None)
+    parser.add_argument('--res', type=float, help='resolution(bp)', default=1e4)
     parser.add_argument('--m1', type=str, help='fine-model path', default=None)
     parser.add_argument('--m2', type=str, help='large-model path', default=None)
-    parser.add_argument('--out', type=str, help='output name', default=None)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
 

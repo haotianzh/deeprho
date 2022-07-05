@@ -121,16 +121,16 @@ def run(args):
     save_training_data(args.out, (data, rhos))
     
 def gt_args(parser):
-    parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=10)
+    parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=200)
     parser.add_argument('--ndraw', type=int, help='number of draws per sample', default=5)
     parser.add_argument('--npop', type=int, help='number of haplotypes', default=100)
     parser.add_argument('--ne', type=float, help='effective population size', default=1e5)
     parser.add_argument('--ploidy', type=int, help='ploidy', default=1)
     parser.add_argument('--mutation-rate', type=float, help='mutation rate', default=2.5e-8)
     parser.add_argument('--demography', type=str, help='demography file path', default=None)
-    parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=1e-10)
-    parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=1e-8)
-    parser.add_argument('--num_thread', type=int, help='number of threads', default=mp.cpu_count() - 2)
+    parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=1e-9)
+    parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=5e-7)
+    parser.add_argument('--num-thread', type=int, help='number of threads', default=mp.cpu_count() - 2)
     parser.add_argument('--out', type=str, help='output path')
 
 
