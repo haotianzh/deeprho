@@ -27,20 +27,20 @@ DeepRho constructs images from population genetic data and takes advantage of th
 - VCF file (check `examples/data.vcf`)
 
 ### Usage (Examples)
-- #### Estimate
+- #### estimate
     ```python
     # given a .vcf file, use default models and plot the estimated recombination map. 
     deeprho estiamte --file examples/data.vcf --length 1e5 --ne 1e5 --ploidy 2 --m1 models/model_fine.hdf5 --m2 models/model_large.hdf5 --plot
   ```
-- #### simuate
-    ```python
+- #### simulate
+    ```sh
     # sample 10 genomes with recombination rates uniformly spaced between 1e-9 and 1e-8, and use 8 cpus for parallel speeding.
     deeprho simulate --nsam 10 --npop 50 --mutation-rate 1e-8 --ne 1e5 --rmin 1e-9 --rmax 1e-8 --num-thread 8 
     ```
 
 ### Docs
 - #### Estimate
-  ```shell
+  ```python
     deeprho estimate [-h] [--file FILE] [--length LENGTH] [--ne NE] [--ploidy PLOIDY] [--res RES] \
                       [--threshold THRESHOLD] [--gws GWS] [--ws WS] [--ss SS] [--m1 MODEL_FINE] \
                       [--m2 MODEL_LARGE] [--plot] [--savenp] [--num-thread NUM_THREAD]  
