@@ -38,6 +38,11 @@ DeepRho constructs images from population genetic data and takes advantage of th
     deeprho simulate --nsam 10 --npop 50 --mutation-rate 1e-8 --ne 1e5 --rmin 1e-9 --rmax 1e-8 --num-thread 8 
     ```
 
+### Output 
+- `.txt` file consists of 3 columns **Start**, **End**, **Rate** seperated by tab. Each row gives a **Rate** in a window located from **Start** to **End**.
+   There will be overlapping windows if users specify a customized `<SS>`, see [Docs](#Docs)
+
+
 ### Docs
 - #### <a name="estimate"></a>Estimate 
   ```python
@@ -67,7 +72,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
        where S<sub>n</sub> is physical position of the last SNP site, S<sub>1</sub> is the position of the first SNP site. 
     - `<MODEL_FINE>, <MODEL_LARGE>` are two pretrained-models, `deeprho` takes two-stages strategies to estimate recombination rate, 
        `<MODEL_FINE>` is applied for estimating recombination background regions while `<MODEL_LARGE>` is used to fine-tune hotspot regions.
-        two default models are included in this repo, users are also allowed to train their own models through following sections.
+        two default models with a constant demographic model are included in this repo, users are also allowed to train their own models through following sections.
     - `<THRESHOLD>` define a threshold above which a region can be regarded as a hotspot. 5x10<sup>-8</sup> is set as default.
     - `<GWS>` guides how large region the genealogies are inferred from. As our test, 1000 is a great choice to include as much information as possible
        for improving local genealogical inference.
