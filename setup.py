@@ -44,7 +44,7 @@ setup(
                        "tskit==0.3.5",
                        "tensorflow-gpu==2.4.0"
                        ],
-    extras_require={"simulate": ["msprime==1.0.0"]},
+    extras_require={"simulate": ["msprime>=1.0.0"]},
     keywords= "population genetics, recombination, algorithm",
     classifiers=CLASSIFIERS
 )
