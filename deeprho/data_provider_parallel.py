@@ -92,6 +92,10 @@ def simulate(configs, args, r):
 def run(args):
     assert args.out is not None, f'no output name.'
     assert args.rmax >= args.rmin, f'r_max should be greater than r_min.'
+    if args.verbose:
+        logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
+                            level=logging.INFO,
+                            datefmt='%m/%d %I:%M:%S')
     logging.info(f'----------- simulation -------------')
     logging.info(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
     pool = Pool(args.num_thread // 2)
@@ -132,6 +136,7 @@ def gt_args(parser):
     parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=5e-7)
     parser.add_argument('--num-thread', type=int, help='number of threads', default=mp.cpu_count() - 2)
     parser.add_argument('--out', type=str, help='output path')
+    parser.add_argument('--verbose', help='show loggings', action='store_true')
 
 
 if __name__ == '__main__':

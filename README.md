@@ -1,25 +1,26 @@
-# *DeepRho(v2.0)*
+## *DeepRho(v2.0)*
 DeepRho: software accompanyment for "DeepRho: Accurate Estimation of Recombination Rate from Inferred Genealogies using Deep Learning", Haotian Zhang and Yufeng Wu, manuscript, 2021.
 
 DeepRho constructs images from population genetic data and takes advantage of the power of convolutional neural network (CNN) in image classification to etstimate recombination rate. The key idea of DeepRho is generating genetics-informative images based on inferred gene geneaologies and linkage disequilibrium from population genetic data.
 
-# Code
+### Code
 `deeprho` is an open-source software developed for per-base recombination rate estimation from inferred genealogies using deep learning. `deeprho` makes estimates based on LD patterns and local genealogical trees inferred by [*RENT+*](https://github.com/SajadMirzaei/RentPlus).
 
 ---
 ### Prerequisite
 - OS: Linux, Windows, MacOS
 - Software: [Conda](https://docs.conda.io/projects/continuumio-conda/en/latest/user-guide/install/download.html)
-- Device: [CUDA-Enabled GPU](https://developer.nvidia.com/cuda-gpus) (optional, CPU-only settings see below)
+- Device: [CUDA-Enabled GPU](https://developer.nvidia.com/cuda-gpus) (optional, default set to use CPU)
 
 ### Installation
 1. Clone from GitHub: `git clone https://github.com/haotianzh/deeprho_v2.git` or Download & unzip the file to your local directory.
 2. Enter the directory: `cd deeprho_v2`
 3. Create a virtual environment through conda: `conda create -n deeprho python=3.7`
-4. activate conda environment: `conda activate deeprho`
-5. install [msprime](https://tskit.dev/msprime/docs/stable/installation.html): `conda install msprime -c conda-forge`
-6. build deeprho: `pip install .`
-7. inspect correct installation: `deeprho -v`
+4. Activate conda environment: `conda activate deeprho`
+5. Install [msprime](https://tskit.dev/msprime/docs/stable/installation.html): `conda install msprime -c conda-forge`
+6. [Optional] see GPU support if you are seeking to use GPU
+7. Build deeprho: `pip install .`
+8. Inspect correct installation: `deeprho -v`
 
 
 ### Input Formats
@@ -60,6 +61,20 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
 
 - `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 
+
+### GPU support
+1. First check if your graphics card is [CUDA-enabled](https://developer.nvidia.com/cuda-gpus).
+2. Check [compatibility table](https://www.tensorflow.org/install/source#gpu) to find appropriate python, tensorflow, CUDA, cuDNN version combo. (We test on tensorflow 2.4, CUDA 11.0 and cuDNN 8.0)
+3. Install `tensorflow-gpu` through `pip`: `pip install tensorflow-gpu==2.4.0`
+4. Install `cudatoolkit` and `cudnn`: `conda install cudnn=8.0.5.39 -c conda-forge` (installing `cudnn` will automatically install its corresponding `cudatoolkit`)
+5. To check if they work properly,
+   ```python
+    import tensorflow as tf
+    # if you can see your graphics card here, it works!
+    print(tf.config.experimental.list_physical_devices('GPU'))
+    ```
+
+---
 ### Docs
 - #### <a name="estimate"></a>Estimate 
   ```python

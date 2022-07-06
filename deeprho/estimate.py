@@ -126,9 +126,12 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
 
 def run(args):
     assert args.file is not None, f'no input provided.'
-    assert args.m1 is not None and args.m2 is not None, f'no specified models.'
+    assert args.m1 is not None and args.m2 is not None, f'no specified models, --m1 and --m2 should be specified.'
     assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
-
+    if args.verbose:
+        logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
+                            level=logging.INFO,
+                            datefmt='%m/%d %I:%M:%S')
     logging.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)
     logging.debug(f'data: {haplotype.nsites} SNPs, {haplotype.nsamples} individuals')
@@ -182,6 +185,7 @@ def gt_args(parser):
     parser.add_argument('--m2', type=str, help='large-model path', default=None)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
+    parser.add_argument('--verbose', help='show loggings', action='store_true')
 
 
 if __name__ == '__main__':
