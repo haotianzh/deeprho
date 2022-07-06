@@ -18,7 +18,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
 3. Create a virtual environment through conda: `conda create -n deeprho python=3.7`
 4. Activate conda environment: `conda activate deeprho`
 5. Install [msprime](https://tskit.dev/msprime/docs/stable/installation.html): `conda install msprime -c conda-forge`
-6. [Optional] see GPU support if you are seeking to use GPU
+6. [Optional] see [GPU support](#gpu) if you are seeking to use GPU
 7. Build deeprho: `pip install .`
 8. Inspect correct installation: `deeprho -v`
 
@@ -62,7 +62,7 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
 - `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 
 
-### GPU support
+### <a name='gpu'></a>GPU support
 1. First check if your graphics card is [CUDA-enabled](https://developer.nvidia.com/cuda-gpus).
 2. Check [compatibility table](https://www.tensorflow.org/install/source#gpu) to find appropriate python, tensorflow, CUDA, cuDNN version combo. (We test on tensorflow 2.4, CUDA 11.0 and cuDNN 8.0)
 3. Install `tensorflow-gpu` through `pip`: `pip install tensorflow-gpu==2.4.0`
