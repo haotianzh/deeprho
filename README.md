@@ -124,5 +124,10 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
     - `<NPOP>` should be considered together with `<PLOIDY>`, there will be `<NPOP>*<PLOIDY>` haplotypes in a single genome. For example, `<NPOP>=50, <PLOIDY>=2` means 100 haplotypes in total.
     - `<NE>, <DEMOGRAPHY_FILE>` these are important parameters to define effective population size changes, set either `<NE>` or `<DEMOGRAPHY_FILE>`. Simply setting `<NE>=10^5` refers to a constant population size, 
        however, if you have confidence with a more detailed demographic history, a `.csv` file can also be provided instead, see example. If both `<NE>, <DEMOGRAPHY_FILE>` are specified, `deeprho` keeps `<DEMOGRAPHY_FILE>` while `<NE>` is ignored.
-  
+    
+- about demogrpahy settings: there are many softwares used for inferring demographic history, such as [PSMC](https://github.com/stschiff/msmc), [SMC++](https://github.com/popgenmethods/smcpp), [MSMC](https://github.com/stschiff/msmc).
+Here we take SMC++ output as our input but only contains one population, get more information about [SMC++ output](https://github.com/popgenmethods/pyrho/blob/master/example/ACB_pop_sizes.csv).
 
+**TIPS: If not be familiar with these parametric settings, just leave them as default if possible.**
+###Contact: 
+If any questions, feel free to send email to <a href = "mailto: haotianzh@uconn.edu"><haotianzh@uconn.edu></a>.
