@@ -129,5 +129,6 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
 Here we take SMC++ output as our input but only contains one population, get more information about [SMC++ output](https://github.com/popgenmethods/pyrho/blob/master/example/ACB_pop_sizes.csv).
 
 **TIPS: If not be familiar with these parametric settings, just leave them as default if possible.**
+
 ###Contact: 
 If any questions, feel free to send email to <a href = "mailto: haotianzh@uconn.edu"><haotianzh@uconn.edu></a>.
