@@ -133,3 +133,7 @@ deeprho/popgen/__pycache__/
 
 # pycharm
 .idea/
+
+# setuptools build
+.eggs
+deeprho.egg-info/
