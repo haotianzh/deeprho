@@ -120,14 +120,14 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
                           [--rmin RMIN] [--rmax RMAX] [--num-thread NUM_THREAD] [--out OUT]
     ```
     | Arguments                         | Descriptions                                                                          |
-    |-----------------------------------|---------------------------------------------------------------------------------------|
+    |---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
     | `--nsam <NSAM>`                   | Number of different recombination rates sampled from \<RMIN> to \<RMAX> (default 200) |
     | `--ndraw <NDRAW>`                 | Number of random draws at each different recombination rate (default 5)               |
     | `--npop <NPOP>`                   | Number of individuals (default 100)                                                   |
     | `--mutation-rate <MUTATION_RATE>` | Mutation rate (default 2.5x10<sup>-8</sup>)                                           |
     | `--ploidy <PLOIDY>`               | Ploidy (default 1)                                                                    |
     | `--ne <NE>`                       | Effective population size (default 10<sup>5</sup>)                                    |       
-    | `--demography <DEMOGRAPHY_FILE>`  | Demographic history (see details)                                                     |
+    | `--demography <DEMOGRAPHY_FILE>`  | Demographic history [see details](#simulate:~:text=%3CNE%3E%2C%20%3CDEMOGRAPHY_FILE%3E,NE%3E%20is%20ignored.)                                                   |
     | `--num_thread <NUM_THREAD>`       | Specify number of workers for parallel (default 4)                                    |
     | `--rmin <RMIN>`                   | Minimum recombination rate (default 10<sup>-9</sup>)                                  |
     | `--rmax <RMAX>`                   | Maximum recombination rate (default 5x10<sup>-7</sup>)                                |
