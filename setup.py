@@ -41,7 +41,7 @@ setup(
                        "pyvcf==0.6.8",
                        "scikit-learn>=0.23.1",
                        "scipy>=1.6.2",
-                       "tskit==0.3.5",
+                       "tskit>=0.3.5",
                        "tensorflow-gpu==2.4.0"
                        ],
     extras_require={"simulate": ["msprime>=1.0.0"]},
