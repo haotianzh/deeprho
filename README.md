@@ -130,5 +130,5 @@ Here we take SMC++ output as our input but only contains one population, get mor
 
 **TIPS: If not be familiar with these parametric settings, just leave them as default if possible.**
 
-###Contact: 
+### Contact: 
 If any questions, feel free to send email to <a href = "mailto: haotianzh@uconn.edu"><haotianzh@uconn.edu></a>.
