@@ -22,7 +22,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
 7. inspect correct installation: `deeprho -v`
 
 
-### Input formats
+### Input Formats
 - ms-formatted input (the first line is position (seperated by space) followed by haplotype sequences, check `examples/data.ms` for details)
 - VCF file (check `examples/data.vcf`)
 
@@ -39,10 +39,11 @@ DeepRho constructs images from population genetic data and takes advantage of th
     ```
 
 ### Output 
+Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
 - `.txt` file consists of 3 columns *Start*, *End*, *Rate* seperated by tab. Each row gives a *Rate* in a region located from *Start* to *End*.
     a simple output likes:
     ```python
-    ## data_out.txt
+    ## data.out.txt
     Start	End	Rate
     0	8	0.0
     8	1822	2.862294427352283e-08
@@ -54,6 +55,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
     17689	19928	1.6854787948356243e-09
     ```
 - `.png` file stores a plot of recombination map which gives a simple visualization.
+<img src="data.out.png" alt="isolated" width="800"/>
 - `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 
 ### Docs
