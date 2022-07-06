@@ -55,7 +55,7 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
     17689	19928	1.6854787948356243e-09
     ```
 - `.png` file stores a plot of recombination map which gives a simple visualization.
-<img src="data.out.png" alt="isolated" width="600"/>
+   <img src="data.out.png" alt="isolated" width="600" />
 
 - `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 
