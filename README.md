@@ -39,9 +39,22 @@ DeepRho constructs images from population genetic data and takes advantage of th
     ```
 
 ### Output 
-- `.txt` file consists of 3 columns **Start**, **End**, **Rate** seperated by tab. Each row gives a **Rate** in a window located from **Start** to **End**.
-   There will be overlapping windows if users specify a customized `<SS>`, see [Docs](#Docs)
-
+- `.txt` file consists of 3 columns *Start*, *End*, *Rate* seperated by tab. Each row gives a *Rate* in a region located from *Start* to *End*.
+    a simple output likes:
+    ```python
+    ## data_out.txt
+    Start	End	Rate
+    0	8	0.0
+    8	1822	2.862294427352283e-08
+    1822	4321	2.3297465959039865e-08
+    4321	7125	1.6098357471351787e-08
+    7125	10570	4.027717518356611e-09
+    10570	14312	2.1394376828669226e-09
+    14312	17689	2.2685986706092933e-09
+    17689	19928	1.6854787948356243e-09
+    ```
+- `.png` file stores a plot of recombination map which gives a simple visualization.
+- `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 
 ### Docs
 - #### <a name="estimate"></a>Estimate 
