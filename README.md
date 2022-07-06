@@ -82,23 +82,24 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
                       [--threshold THRESHOLD] [--gws GWS] [--ws WS] [--ss SS] [--m1 MODEL_FINE] \
                       [--m2 MODEL_LARGE] [--plot] [--savenp] [--num-thread NUM_THREAD]  
   ```
-    | Arguments                   | Descriptions                                                      |
-    |------------------------------|-------------------------------------------------------------------|
-    | `--file <FILE>`             | Input file                                                        |
-    | `--length <LENGTH>`         | Length of chromosome                                              |
-    | `--m1 <MODEL_FINE>`         | Path of fine model                                                |
-    | `--m2 <MODEL_LARGE>`        | Path of large model                                               |
-    | `--ploidy <PLOIDY>`         | Ploidy (default 1)                                                |
-    | `--ne <NE>`                 | Effective population size (default 10<sup>5</sup>)                |
-    | `--res <RES>`               | Resolution of estimation (default 10<sup>4</sup>)                 |
-    | `--threshold <THRESHOLD>`   | Threshold of recombination Hotspot (default 5x10<sup>-8</sup>)    |
-    | `--gws <GWS>`               | Window size for inferring genealogy (default 10<sup>3</sup> SNPs) |
-    | `--ws <WS>`                 | Window size for performing `deeprho` (default 50 SNPs)            |
-    | `--ss <SS>`                 | Step size for performing `deeprho` (default same as `--ws`)       |
-    | `--savenp`                  | Save estimated rates as numpy ndarray (saved as `<FILE>.out.npy`) |
-    | `--plot`                    | Plot recombination map (saved as `<FILE>.out.png`)                |
-    | `--num_thread <NUM_THREAD>` | Specify number of workers for parallel (default 4)                |
-    | `--help, -h`                | Show usage                                                        |
+    | Arguments                   | Descriptions                                                     |
+    |-----------------------------|------------------------------------------------------------------|
+    | `--file <FILE>`             | Input file                                                       |
+    | `--length <LENGTH>`         | Length of chromosome                                             |
+    | `--m1 <MODEL_FINE>`         | Path of fine model                                               |
+    | `--m2 <MODEL_LARGE>`        | Path of large model                                              |
+    | `--ploidy <PLOIDY>`         | Ploidy (default 1)                                               |
+    | `--ne <NE>`                 | Effective population size (default 10<sup>5</sup>)               |
+    | `--res <RES>`               | Resolution of estimation (default 10<sup>4</sup>)                |
+    | `--threshold <THRESHOLD>`   | Threshold of recombination Hotspot (default 5x10<sup>-8</sup>)   |
+    | `--gws <GWS>`               | Window size for inferring genealogy (default 10<sup>3</sup> SNPs)|
+    | `--ws <WS>`                 | Window size for performing `deeprho` (default 50 SNPs)           |
+    | `--ss <SS>`                 | Step size for performing `deeprho` (default same as `--ws`)      |
+    | `--savenp`                  | Save estimated rates as numpy ndarray (saved as `<FILE>.out.npy`)|
+    | `--plot`                    | Plot recombination map (saved as `<FILE>.out.png`)               |
+    | `--num_thread <NUM_THREAD>` | Specify number of workers for parallel (default 4)               |
+    | `--verbose`                 | Show loggings in console                                         |
+    | `--help, -h`                | Show usage                                                       |
 
     - `<LENGTH>` can be either explicitly specified or inferred from input, if the latter, `<LENGTH>`= S<sub>n</sub>-S<sub>1</sub>, 
        where S<sub>n</sub> is physical position of the last SNP site, S<sub>1</sub> is the position of the first SNP site. 
@@ -119,17 +120,18 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
                           [--rmin RMIN] [--rmax RMAX] [--num-thread NUM_THREAD] [--out OUT]
     ```
     | Arguments                         | Descriptions                                                                          |
-    |---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+    |-----------------------------------|---------------------------------------------------------------------------------------|
     | `--nsam <NSAM>`                   | Number of different recombination rates sampled from \<RMIN> to \<RMAX> (default 200) |
     | `--ndraw <NDRAW>`                 | Number of random draws at each different recombination rate (default 5)               |
     | `--npop <NPOP>`                   | Number of individuals (default 100)                                                   |
     | `--mutation-rate <MUTATION_RATE>` | Mutation rate (default 2.5x10<sup>-8</sup>)                                           |
     | `--ploidy <PLOIDY>`               | Ploidy (default 1)                                                                    |
     | `--ne <NE>`                       | Effective population size (default 10<sup>5</sup>)                                    |       
-    | `--demography <DEMOGRAPHY_FILE>`      | Demographic history (see details)                                                     |
+    | `--demography <DEMOGRAPHY_FILE>`  | Demographic history (see details)                                                     |
     | `--num_thread <NUM_THREAD>`       | Specify number of workers for parallel (default 4)                                    |
     | `--rmin <RMIN>`                   | Minimum recombination rate (default 10<sup>-9</sup>)                                  |
     | `--rmax <RMAX>`                   | Maximum recombination rate (default 5x10<sup>-7</sup>)                                |
+    |  `--verbose`                      | Show loggings in console                                                              |
     | `--help, -h`                      | Show usage                                                                            |
 
     - `<NSAM>` means how many **uniform interpolation points** we are expecting to have between `<RMIN>` to `<RMAX>`, suppose `<RMIN>=10^-9, <RMAX>=10^-8, <NSAM>=3`, 
