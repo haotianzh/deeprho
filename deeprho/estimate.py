@@ -169,8 +169,8 @@ def run(args):
 
 def gt_args(parser):
     # model_default_dir = pathlib.Path(popgen.__file__).parent.parent.joinpath('models')
-    # model_fine_default_path = model_default_dir.joinpath('model_fine.hdf5')
-    # model_large_default_path = model_default_dir.joinpath('model_large.hdf5')
+    # model_fine_default_path = model_default_dir.joinpath('model_fine.h5')
+    # model_large_default_path = model_default_dir.joinpath('model_large.h5')
     parser.add_argument('--file', type=str, help='filename')
     parser.add_argument('--num-thread', type=int, help='number of threads', default=4)
     parser.add_argument('--ne', type=float, help='effective population size', default=1e5)
@@ -196,8 +196,8 @@ if __name__ == '__main__':
     gt_args(parser)
     args = parser.parse_args(['--file', 'test.vcf',
                               '--ploidy', '2',
-                              '--m1', '../models/model_fine.hdf5',
-                              '--m2', '../models/model_large.hdf5',
+                              '--m1', '../models/model_fine.h5',
+                              '--m2', '../models/model_large.h5',
                               '--ne', '138482',
                               '--res', '1e3',
                               '--plot'])
