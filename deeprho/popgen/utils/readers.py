@@ -120,6 +120,27 @@ def load_demography_from_file(file, generation=GENERATION):
     return demography
 
 
-if __name__ == '__main__':
-    filename = 'C:/Users/zht/Desktop/deeprho_ results/examples/data.vcf'
-    load_vcf_from_file(filename)
+def load_recombination_map_from_file(file, background_rate=1e-10):
+    check_file_existence(file)
+    rate_map_file = pd.read_csv(file, sep='\t')
+    positions = []
+    rates = []
+    for index, row in rate_map_file.iterrows():
+        if index == 0:
+            positions.append(row['Start'])
+            positions.append(row['End'])
+            rates.append(row['Rate'])
+        else:
+            start, end, rate= row['Start'], row['End'], row['Rate']
+            if start == positions[-1]:
+                positions.append(end)
+                rates.append(rate)
+            else:
+                positions.append(start)
+                rates.append(background_rate)
+                positions.append(end)
+                rates.append(rate)
+    map = msp.RateMap(position=positions, rate=rates)
+    return map
+
+

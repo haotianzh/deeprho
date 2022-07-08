@@ -62,8 +62,8 @@ def save_training_data(path, data):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
     with open(path, mode='wb') as out:
         pickle.dump((x_train, x_test, y_train, y_test), out)
-    logging.info(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
-    logging.info(f'training data has been stored in {args.out}')
+    logging.warning(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
+    logging.warning(f'training data has been stored in {args.out}')
 
 def simulate(configs, args, r):
     haplotypes = []
@@ -72,7 +72,7 @@ def simulate(configs, args, r):
     configs['recombination_rate'] = r
     simulator = popgen.Simulator(configs)
     for data in simulator(args.npop, 1):
-        logging.info(f'sampling in {r}, {data}')
+        logging.warning(f'sampling in {r}, {data}')
         data = popgen.utils.filter_replicate(data)
         reps = popgen.utils.cut_replicate(data, window_size=global_window_size)
         haps = [rep.haplotype for rep in reps]
@@ -84,7 +84,11 @@ def simulate(configs, args, r):
                 genealogies.append(gen[start: start + window_size])
                 length = hap.positions[start + window_size] - hap.positions[start]
                 ## have to redesign when demography included
-                scaled_rho = 2 * configs['population_size'] * r * length
+                if configs['demography'] is not None:
+                    pop_size = configs['demography'].events[0].initial_size
+                else:
+                    pop_size = configs['population_size']
+                scaled_rho = 2 * pop_size * r * length
                 rhos.append(scaled_rho)
     return haplotypes, genealogies, rhos
 
@@ -94,7 +98,7 @@ def run(args):
     assert args.rmax >= args.rmin, f'r_max should be greater than r_min.'
     if args.verbose:
         logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
-                            level=logging.INFO,
+                            level=logging.WARNING,
                             datefmt='%m/%d %I:%M:%S')
     logging.info(f'----------- simulation -------------')
     logging.info(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
@@ -114,12 +118,12 @@ def run(args):
         rhos += result[2]
 
     # build the whole set, train set and test set. compute Linkage Disequilibrium, ld_cluster, Robinson-Foulds distance, and also triplet distance.
-    rfdistance = popgen.utils.rfdist([list(val) for val in genealogies], num_thread=args.num_thread)
-    tridistance = popgen.utils.triplet_dist([list(val) for val in genealogies], num_thread=args.num_thread)
+    rf_distance = popgen.utils.rfdist([list(val) for val in genealogies], num_thread=args.num_thread)
+    tri_distance = popgen.utils.triplet_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     lds = popgen.utils.linkage_disequilibrium(haplotypes)
     lds = np.expand_dims(np.array(lds), axis=-1)
-    rfs = np.expand_dims(np.array(rfdistance), axis=-1)
-    tris = np.expand_dims(np.array(tridistance), axis=-1)
+    rfs = np.expand_dims(np.array(rf_distance), axis=-1)
+    tris = np.expand_dims(np.array(tri_distance), axis=-1)
     data = np.concatenate([lds,rfs,tris], axis=-1).astype(np.float64)
     rhos = np.array(rhos).reshape(-1,1)
     save_training_data(args.out, (data, rhos))
