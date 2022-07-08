@@ -194,5 +194,11 @@ if __name__ == '__main__':
                         datefmt='%m/%d %I:%M:%S')
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args()
+    args = parser.parse_args(['--file', 'test.vcf',
+                              '--ploidy', '2',
+                              '--m1', '../models/model_fine.hdf5',
+                              '--m2', '../models/model_large.hdf5',
+                              '--ne', '138482',
+                              '--res', '1e3',
+                              '--plot'])
     run(args)

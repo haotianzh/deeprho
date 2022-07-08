@@ -1,5 +1,6 @@
 import argparse
 import os
+import logging
 import multiprocessing as mp
 from deeprho import popgen
 from deeprho.data_provider_parallel import global_window_size, window_size
@@ -31,6 +32,10 @@ def simulate_single_genome(configs, args):
 
 def run(args):
     assert args.out is not None, f'no output name.'
+    if args.demography is not None:
+        assert os.path.exists(args.demography)
+    if args.rate_map is not None:
+        assert os.path.exists(args.rate_map)
     configs = build_configuration(args)
     genome = simulate_single_genome(configs, args)
     with open(args.out, 'w') as vcf_file:

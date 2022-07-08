@@ -72,7 +72,6 @@ def simulate(configs, args, r):
     configs['recombination_rate'] = r
     simulator = popgen.Simulator(configs)
     for data in simulator(args.npop, 1):
-        logging.warning(f'sampling in {r}, {data}')
         data = popgen.utils.filter_replicate(data)
         reps = popgen.utils.cut_replicate(data, window_size=global_window_size)
         haps = [rep.haplotype for rep in reps]
@@ -83,13 +82,14 @@ def simulate(configs, args, r):
                 haplotypes.append(hap.matrix[:, start:start + window_size])
                 genealogies.append(gen[start: start + window_size])
                 length = hap.positions[start + window_size] - hap.positions[start]
-                ## have to redesign when demography included
-                if configs['demography'] is not None:
+                # !have to redesign when demography included
+                if args.demography is not None:
                     pop_size = configs['demography'].events[0].initial_size
                 else:
                     pop_size = configs['population_size']
                 scaled_rho = 2 * pop_size * r * length
                 rhos.append(scaled_rho)
+    logging.warning(f'complete sampling in {r}, {data}')
     return haplotypes, genealogies, rhos
 
 
@@ -100,8 +100,8 @@ def run(args):
         logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
                             level=logging.WARNING,
                             datefmt='%m/%d %I:%M:%S')
-    logging.info(f'----------- simulation -------------')
-    logging.info(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
+    logging.warning(f'----------- simulation -------------')
+    logging.warning(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
     pool = Pool(args.num_thread // 2)
     haplotypes = []
     genealogies = []
@@ -145,11 +145,19 @@ def gt_args(parser):
 
 if __name__ == '__main__':
     logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
-                        level=logging.INFO,
+                        level=logging.WARNING,
                         datefmt='%m/%d %I:%M:%S')
     parser = argparse.ArgumentParser('data simulator')
     gt_args(parser)
-    args = parser.parse_args()
+    args = parser.parse_args(['--nsam', '10',
+                              '--npop', '100',
+                              '--ne', '1e4',
+                              '--ploidy', '2',
+                              '--rmin', '1e-9',
+                              '--rmax', '1e-7',
+                              '--out', '../garbo/train.data',
+                              '--verbose'
+                              ])
     run(args)
 
 
