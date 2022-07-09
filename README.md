@@ -106,10 +106,10 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
     - `<MODEL_FINE>, <MODEL_LARGE>` are two pretrained-models, `deeprho` takes two-stages strategies to estimate recombination rate, 
        `<MODEL_FINE>` is applied for estimating recombination background regions while `<MODEL_LARGE>` is used to fine-tune hotspot regions.
         two default models with a constant demographic model are included in this repo, users are also allowed to train their own models through following sections.
-    - `<THRESHOLD>` define a threshold above which a region can be regarded as a hotspot. 5x10<sup>-8</sup> is set as default.
+    - `<THRESHOLD>` defines a threshold above which a region can be regarded as a hotspot. 5x10<sup>-8</sup> is set as default.
     - `<GWS>` guides how large region the genealogies are inferred from. As our test, 1000 is a great choice to include as much information as possible
        for improving local genealogical inference.
-    - `<WS>` specified window size during estimation, `deeprho` is a sliding-window based algorithm, too large window will weaken its ability to detect
+    - `<WS>` specifies window size during estimation, `deeprho` is a sliding-window based algorithm, too large window will weaken its ability to detect
        hotspot, however, too small region may undermine its performance. 50 is highly recommended in practice.
   
 
@@ -142,7 +142,7 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
     - `<NE>, <DEMOGRAPHY_FILE>` these are important parameters to define effective population size changes, set either `<NE>` or `<DEMOGRAPHY_FILE>`. Simply setting `<NE>=10^5` refers to a constant population size, 
        however, if you have confidence with a more detailed demographic history, a `.csv` file can also be provided instead, see following. If both `<NE>, <DEMOGRAPHY_FILE>` are specified, `deeprho` keeps `<DEMOGRAPHY_FILE>` while `<NE>` is ignored.
     
-- about demogrpahy settings: there are many softwares used for inferring demographic history, such as [PSMC](https://github.com/stschiff/msmc), [SMC++](https://github.com/popgenmethods/smcpp), [MSMC](https://github.com/stschiff/msmc).
+- about demogrpahy settings: there are some software used for inferring demographic history, such as [PSMC](https://github.com/stschiff/msmc), [SMC++](https://github.com/popgenmethods/smcpp), [MSMC](https://github.com/stschiff/msmc).
 Here we take SMC++ output as our input but only contains one population, get more information about [SMC++ output](https://github.com/popgenmethods/pyrho/blob/master/example/ACB_pop_sizes.csv).
 
 **TIPS: If not be familiar with these parametric settings, just leave them as default if possible.**

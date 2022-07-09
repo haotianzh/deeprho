@@ -1,7 +1,9 @@
 """
 
 Author: Haotian Z
-POPGEN is a lib for research on Population Genetics. Specifically,
+
+POPGEN is a lib for research on Population Genetics.
+Specifically, for computational ops on tree structures.
 
 """
 
