@@ -2,6 +2,7 @@ import os
 import pathlib
 import argparse
 import pathlib
+import coloredlogs
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ from deeprho.popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequi
 
 # how much the scaling for rate during training. 10 means 10x
 scaling_factor = 10
-
+logger = logging.getLogger(__name__)
 
 def get_deeprho_map(rates, bounds, length):
     length = int(length)
@@ -71,7 +72,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
                                  step_size=step_size,
                                  drop_last=True)
     # infer genealogy with global window size as 1e3
-    logging.info('inferring local genealogies')
+    logger.info('inferring local genealogies')
     global_genealogies = []
     global_slices = sliding_windows(haplotype,
                                     window_size=global_window_size,
@@ -87,7 +88,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
         if i + window_size <= haplotype.nsites:
             _slices.append(global_genealogies[i: i+window_size])
     # calculate distance
-    logging.info('calculating distances')
+    logger.info('calculating distances')
     lds = linkage_disequilibrium(haplotypes)
     rfs = rfdist(_slices, num_thread=num_thread)
     tris = triplet_dist(_slices, num_thread=num_thread)
@@ -98,10 +99,10 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     # two-stages model
     if sequence_length is None:
         sequence_length = haplotype.positions[-1]
-    logging.info('loading two-stages models')
+    logger.info('loading two-stages models')
     model_fine = tf.keras.models.load_model(model_fine_path)
     model_large = tf.keras.models.load_model(model_large_path)
-    logging.info('predicting')
+    logger.info('predicting')
     rates = model_fine.predict(x)
     rates_large = model_large.predict(x) * scaling_factor
     scaled_rates, _, __ = stat(rates, haplotype.positions,
@@ -128,13 +129,17 @@ def run(args):
     assert args.file is not None, f'no input provided.'
     assert args.m1 is not None and args.m2 is not None, f'no specified models, --m1 and --m2 should be specified.'
     assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
+
     if args.verbose:
-        logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
-                            level=logging.INFO,
-                            datefmt='%m/%d %I:%M:%S')
-    logging.info(f'loading data from {args.file}')
+        coloredlogs.install(logger=logger, level='INFO', field_styles=dict(
+            asctime={"color": 10},
+            message={"color": 14},
+            levelname={"color": 11},
+            programname={"color": 9}
+        ),  fmt='%(asctime)s [deeprho_v2] %(programname)s %(levelname)s - %(message)s')
+    logger.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)
-    logging.debug(f'data: {haplotype.nsites} SNPs, {haplotype.nsamples} individuals')
+    logger.debug(f'data: {haplotype.nsites} SNPs, {haplotype.nsamples} individuals')
     length = args.length
     if length is None:
         length = haplotype.positions[-1] - haplotype.positions[0]
@@ -189,16 +194,14 @@ def gt_args(parser):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
-                        level=logging.INFO,
-                        datefmt='%m/%d %I:%M:%S')
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args(['--file', 'test.vcf',
+    args = parser.parse_args(['--file', '../examples/data.vcf',
                               '--ploidy', '2',
                               '--m1', '../models/model_fine.h5',
                               '--m2', '../models/model_large.h5',
-                              '--ne', '138482',
+                              '--ne', '1e5',
                               '--res', '1e3',
-                              '--plot'])
+                              '--plot',
+                              '--verbose'])
     run(args)

@@ -3,6 +3,7 @@ import time
 import logging
 from deeprho import popgen
 import argparse
+import coloredlogs
 import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
@@ -31,6 +32,7 @@ from multiprocessing.dummy import Pool
 #     'ploidy': 1
 # }
 ##########################################################################
+logger = logging.getLogger(__name__)
 global_window_size = 1000
 window_size = 50
 
@@ -62,8 +64,8 @@ def save_training_data(path, data):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
     with open(path, mode='wb') as out:
         pickle.dump((x_train, x_test, y_train, y_test), out)
-    logging.warning(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
-    logging.warning(f'training data has been stored in {args.out}')
+    logger.info(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
+    print(f'training data has been stored in {args.out}')
 
 def simulate(configs, args, r):
     haplotypes = []
@@ -89,7 +91,7 @@ def simulate(configs, args, r):
                     pop_size = configs['population_size']
                 scaled_rho = 2 * pop_size * r * length
                 rhos.append(scaled_rho)
-    logging.warning(f'complete sampling in {r}, {data}')
+    logger.info(f'complete sampling in {r}, {data}')
     return haplotypes, genealogies, rhos
 
 
@@ -97,11 +99,14 @@ def run(args):
     assert args.out is not None, f'no output name.'
     assert args.rmax >= args.rmin, f'r_max should be greater than r_min.'
     if args.verbose:
-        logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
-                            level=logging.WARNING,
-                            datefmt='%m/%d %I:%M:%S')
-    logging.warning(f'----------- simulation -------------')
-    logging.warning(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
+        coloredlogs.install(logger=logger, level='INFO', field_styles=dict(
+            asctime={"color": 10},
+            message={"color": 14},
+            levelname={"color": 11},
+            programname={"color": 9}
+        ), fmt='%(asctime)s [deeprho_v2] %(programname)s %(levelname)s - %(message)s')
+    logger.info(f'----------- simulation -------------')
+    logger.info(f'nsam:{args.nsam}, ndraw:{args.ndraw}')
     pool = Pool(args.num_thread // 2)
     haplotypes = []
     genealogies = []
@@ -144,9 +149,6 @@ def gt_args(parser):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format=f'[deeprho_v2] {os.path.basename(__file__)} %(levelname)s %(asctime)s - %(message)s',
-                        level=logging.WARNING,
-                        datefmt='%m/%d %I:%M:%S')
     parser = argparse.ArgumentParser('data simulator')
     gt_args(parser)
     args = parser.parse_args(['--nsam', '10',

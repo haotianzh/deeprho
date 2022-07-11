@@ -31,20 +31,20 @@ setup(
         "console_scripts": ["deeprho = deeprho.entry:main"]
     },
     python_requires=">=3.7",
-    setup_requires=['setuptools==57.5.0'],
+    # setup_requires=['setuptools==57.5.0'],
     install_requires= ["h5py>=2.10.0",
                        "JPype1==1.3.0",
                        "matplotlib>=3.5.1",
                        "pandas>=1.0.5",
                        "numpy>=1.19.2",
                        "pptree==3.1",
-                       "pyvcf==0.6.8",
                        "scikit-learn>=0.23.1",
                        "scipy>=1.6.2",
                        "tskit>=0.3.5",
-                       "tensorflow>=2.4.0"
+                       "tensorflow>=2.4.0",
+                       "coloredlogs"
                        ],
-    extras_require={"simulate": ["msprime>=1.0.0"]},
+    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf==0.6.8"]},
     keywords= "population genetics, recombination, algorithm",
     classifiers=CLASSIFIERS
 )
