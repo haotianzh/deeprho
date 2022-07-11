@@ -1,8 +1,14 @@
 from ..base import Replicate
-import msprime as msp
+import logging
 import numpy as np
 import warnings
 
+logger = logging.getLogger(__name__)
+
+try:
+    import msprime as msp
+except:
+    logger.warning('msprime not found, if you want to simulate data, install it please.')
 
 class ExpLogGenerator(object):
     """ A random float generator for uncertain rates in simulation. """

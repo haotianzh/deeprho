@@ -17,6 +17,7 @@ from deeprho.popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequi
 scaling_factor = 10
 logger = logging.getLogger(__name__)
 
+
 def get_deeprho_map(rates, bounds, length):
     length = int(length)
     starts = [val[0] for val in bounds]
@@ -63,6 +64,7 @@ def plot(rates, threshold, out_name):
     plt.savefig(out_name, dpi=100)
     print(f"figure is saved as '{out_name}'")
 
+
 def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_size=50,
              sequence_length=None, global_window_size=1000, n_pop=100, ploidy=1, ne=1e5,
              resolution=1e4, threshold=5e-8, num_thread=4):
@@ -103,8 +105,8 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     model_fine = tf.keras.models.load_model(model_fine_path)
     model_large = tf.keras.models.load_model(model_large_path)
     logger.info('predicting')
-    rates = model_fine.predict(x)
-    rates_large = model_large.predict(x) * scaling_factor
+    rates = model_fine.predict(x, verbose=0)
+    rates_large = model_large.predict(x, verbose=0) * scaling_factor
     scaled_rates, _, __ = stat(rates, haplotype.positions,
                                sequence_length=sequence_length,
                                bin_width=resolution,
@@ -132,10 +134,10 @@ def run(args):
 
     if args.verbose:
         coloredlogs.install(logger=logger, level='INFO', field_styles=dict(
-            asctime={"color": 10},
-            message={"color": 14},
-            levelname={"color": 11},
-            programname={"color": 9}
+            asctime={"color": 2},
+            message={"color": 6},
+            levelname={"color": 3},
+            programname={"color": 1}
         ),  fmt='%(asctime)s [deeprho_v2] %(programname)s %(levelname)s - %(message)s')
     logger.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)

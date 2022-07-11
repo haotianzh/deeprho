@@ -53,9 +53,11 @@ def recombination_rate_quadratic_interpolation(nsam, i, rmin, rmax):
     rate = np.square((np.sqrt(rmax)-np.sqrt(rmin))/(nsam-1)*i + np.sqrt(rmin))
     return rate
 
+
 def recombination_rate_const_interpolation(nsam, i, rmin, rmax):
     rate = (rmax-rmin) / (nsam-1)*i + rmin
     return rate
+
 
 def save_training_data(path, data):
     assert path is not None, f'no file provided.'
@@ -66,6 +68,7 @@ def save_training_data(path, data):
         pickle.dump((x_train, x_test, y_train, y_test), out)
     logger.info(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
     print(f'training data has been stored in {args.out}')
+
 
 def simulate(configs, args, r):
     haplotypes = []
@@ -100,10 +103,10 @@ def run(args):
     assert args.rmax >= args.rmin, f'r_max should be greater than r_min.'
     if args.verbose:
         coloredlogs.install(logger=logger, level='INFO', field_styles=dict(
-            asctime={"color": 10},
-            message={"color": 14},
-            levelname={"color": 11},
-            programname={"color": 9}
+            asctime={"color": 2},
+            message={"color": 6},
+            levelname={"color": 3},
+            programname={"color": 1}
         ), fmt='%(asctime)s [deeprho_v2] %(programname)s %(levelname)s - %(message)s')
     logger.info(f'----------- simulation -------------')
     logger.info(f'nsam:{args.nsam}, ndraw:{args.ndraw}')

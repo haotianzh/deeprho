@@ -12,6 +12,7 @@ from collections import deque, namedtuple
 import msprime as msp
 from ..base import Haplotype
 
+
 use_pyvcf = False
 logger = logging.getLogger(__name__)
 try:
@@ -24,8 +25,10 @@ except:
 # define hyperparameter in demography
 GENERATION = 25
 
+
 def check_file_existence(file):
     assert os.path.exists(file), f'file {file} does not exist.'
+
 
 def load_ms_from_file(file, true_genealogy=False):
     """
@@ -79,14 +82,14 @@ def load_ms_from_file(file, true_genealogy=False):
 
 def load_vcf_from_file(file):
     if use_pyvcf:
-        return load_vcf_from_file_1(file)
-    return load_vcf_from_file_2(file)
+        return _load_vcf_from_file_1(file)
+    return _load_vcf_from_file_2(file)
 
 
 # use PyVCF, but issues sometimes happen during pip install.
-def load_vcf_from_file_1(file):
+def _load_vcf_from_file_1(file):
     """
-        Load haplotype data from VCF file.
+        Use PyVCF module for reading VCF.
         Input: file path
         Output: Haplotype
     """
@@ -115,7 +118,12 @@ def load_vcf_from_file_1(file):
     return haplotype
 
 
-def load_vcf_from_file_2(file):
+def _load_vcf_from_file_2(file):
+    """
+        Built-in module for reading VCF. Missing sites and unphased sites are filtered.
+        Input: file path
+        Output: Haplotype
+    """
     check_file_existence(file)
     vcf = read_vcf(file)
     df = vcf.data[vcf.data['FILTER'].apply(lambda x: x.lower())=='pass']
@@ -170,7 +178,7 @@ def read_vcf(file):
         line = f.readline().strip()
         while line.startswith('##'):
             count_comments += 1
-            info = parse_vcf_metadata(line)
+            info = _parse_vcf_metadata(line)
             for key, value in info.items():
                 if key not in meta:
                     meta[key] = value
@@ -183,7 +191,7 @@ def read_vcf(file):
     return VCF(meta, vcf_df, file)
 
 
-def parse_vcf_metadata(st):
+def _parse_vcf_metadata(st):
     """
         Parse string like:
         "##INFO=<ID=ID,Number=number,Type=type,Description="description",Source="source",Version="version">"
@@ -249,7 +257,7 @@ def load_recombination_map_from_file(file, background_rate=1e-10):
     """
         Load recombination map from file.
         Input: a deeprho output formatted file, details as follows.
-        If the intervals are not continuous, the uncovered region will be padded as background_rate.
+        If the intervals are not consecutive, the uncovered region will be padded as *background_rate*.
         --------------------
         Start	End	Rate
         0	4000	1e-9
@@ -281,15 +289,3 @@ def load_recombination_map_from_file(file, background_rate=1e-10):
                 rates.append(rate)
     map = msp.RateMap(position=positions, rate=rates)
     return map
-
-
-
-
-
-
-
-
-
-
-
-
