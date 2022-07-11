@@ -13,13 +13,14 @@ from deeprho import __version__
 from deeprho.estimate import gt_args as est_args
 from deeprho.estimate import run as est_run
 from deeprho.data_provider_parallel import gt_args as dpp_args
-from deeprho.data_provider_parallel import run as  dpp_run
+from deeprho.data_provider_parallel import run as dpp_run
 
 
 subcommands_entries = { 'estimate': est_run, 'simulate': dpp_run}
 subcommands_args = {'estimate': est_args, 'simulate': dpp_args}
 subcommands_helps = {'estimate': 'recombination rate estimation',
                      'simulate': 'simulation for re-training'}
+
 
 def main():
     parser = argparse.ArgumentParser(

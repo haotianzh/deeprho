@@ -6,7 +6,7 @@ import coloredlogs
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 # import popgen related lib
 from deeprho.popgen.utils import load_vcf_from_file, load_ms_from_file

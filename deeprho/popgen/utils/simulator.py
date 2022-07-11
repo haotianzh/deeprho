@@ -10,6 +10,7 @@ try:
 except:
     logger.warning('msprime not found, if you want to simulate data, install it please.')
 
+
 class ExpLogGenerator(object):
     """ A random float generator for uncertain rates in simulation. """
 
