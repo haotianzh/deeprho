@@ -44,7 +44,7 @@ setup(
                        "tensorflow>=2.4.0",
                        "coloredlogs"
                        ],
-    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf==0.6.8"]},
+    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf"]},
     keywords= "population genetics, recombination, algorithm",
     classifiers=CLASSIFIERS
 )
