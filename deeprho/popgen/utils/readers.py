@@ -18,7 +18,7 @@ try:
     import vcf
     use_pyvcf = True
 except:
-    logger.warning('PyVCF module not installed.')
+    logger.warning('PyVCF module not installed, use builtin VCF reader.')
 
 
 # define hyperparameter in demography
