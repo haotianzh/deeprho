@@ -2,13 +2,12 @@ from ..base import Replicate
 import logging
 import numpy as np
 import warnings
+from deeprho import LazyLoader
+msp = LazyLoader('msprime')
+# import msprime as msp
+
 
 logger = logging.getLogger(__name__)
-
-try:
-    import msprime as msp
-except:
-    logger.warning('msprime not found, if you want to simulate data, install it please.')
 
 
 class ExpLogGenerator(object):

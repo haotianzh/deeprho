@@ -6,15 +6,17 @@ import coloredlogs
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
+from deeprho import LazyLoader
+from deeprho.config import Config
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-import tensorflow as tf
 # import popgen related lib
-from deeprho.popgen.utils import load_vcf_from_file, load_ms_from_file
-from deeprho.popgen.utils import filter_none_mutation, sliding_windows, stat
-from deeprho.popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequilibrium
+tf = LazyLoader('tensorflow')
+utils = LazyLoader('deeprho.popgen.utils')
 
+# from deeprho.popgen.utils import load_vcf_from_file, load_ms_from_file
+# from deeprho.popgen.utils import filter_none_mutation, sliding_windows, stat
+# from deeprho.popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequilibrium
 # how much the scaling for rate during training. 10 means 10x
-scaling_factor = 10
 logger = logging.getLogger(__name__)
 
 
@@ -36,7 +38,7 @@ def get_deeprho_map(rates, bounds, length):
 
 
 def load_data(file):
-    _extensions = {'.ms': load_ms_from_file, '.vcf': load_vcf_from_file}
+    _extensions = {'.ms': utils.load_ms_from_file, '.vcf': utils.load_vcf_from_file}
     ext = pathlib.Path(file).suffix
     assert ext in _extensions, f'only {_extensions} formats are supported.'
     return _extensions[ext](file)
@@ -68,20 +70,20 @@ def plot(rates, threshold, out_name):
 def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_size=50,
              sequence_length=None, global_window_size=1000, n_pop=100, ploidy=1, ne=1e5,
              resolution=1e4, threshold=5e-8, num_thread=4):
-    haplotype = filter_none_mutation(haplotype)
-    haplotypes = sliding_windows(haplotype,
+    haplotype = utils.filter_none_mutation(haplotype)
+    haplotypes = utils.sliding_windows(haplotype,
                                  window_size=window_size,
                                  step_size=step_size,
                                  drop_last=True)
     # infer genealogy with global window size as 1e3
     logger.info('inferring local genealogies')
     global_genealogies = []
-    global_slices = sliding_windows(haplotype,
+    global_slices = utils.sliding_windows(haplotype,
                                     window_size=global_window_size,
                                     step_size=global_window_size,
                                     drop_last=False)
-    _pre_slices = rentplus(global_slices[:-1], num_thread=num_thread)
-    _last_slice = rentplus(global_slices[-1])
+    _pre_slices = utils.rentplus(global_slices[:-1], num_thread=num_thread)
+    _last_slice = utils.rentplus(global_slices[-1])
     for sli in _pre_slices:
         global_genealogies += sli
     global_genealogies += _last_slice
@@ -91,9 +93,9 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
             _slices.append(global_genealogies[i: i+window_size])
     # calculate distance
     logger.info('calculating distances')
-    lds = linkage_disequilibrium(haplotypes)
-    rfs = rfdist(_slices, num_thread=num_thread)
-    tris = triplet_dist(_slices, num_thread=num_thread)
+    lds = utils.linkage_disequilibrium(haplotypes)
+    rfs = utils.rfdist(_slices, num_thread=num_thread)
+    tris = utils.triplet_dist(_slices, num_thread=num_thread)
     lds = np.expand_dims(np.array(lds, np.float32), axis=-1)
     rfs = np.expand_dims(np.array(rfs, np.float32), axis=-1) / (2*(n_pop-3))
     tris = np.expand_dims(np.array(tris, np.float32), axis=-1) / (n_pop*(n_pop-1)*(n_pop-2)/6)
@@ -106,15 +108,15 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     model_large = tf.keras.models.load_model(model_large_path)
     logger.info('predicting')
     rates = model_fine.predict(x, verbose=0)
-    rates_large = model_large.predict(x, verbose=0) * scaling_factor
-    scaled_rates, _, __ = stat(rates, haplotype.positions,
+    rates_large = model_large.predict(x, verbose=0) * Config.SCALE_FACTOR
+    scaled_rates, _, __ = utils.stat(rates, haplotype.positions,
                                sequence_length=sequence_length,
                                bin_width=resolution,
                                window_size=window_size,
                                step_size=step_size,
                                ploidy=ploidy,
                                ne=ne)
-    scaled_rates_large, _, __ = stat(rates_large, haplotype.positions,
+    scaled_rates_large, _, __ = utils.stat(rates_large, haplotype.positions,
                                      sequence_length=sequence_length,
                                      bin_width=resolution,
                                      window_size=window_size,
@@ -179,17 +181,17 @@ def gt_args(parser):
     # model_fine_default_path = model_default_dir.joinpath('model_fine.h5')
     # model_large_default_path = model_default_dir.joinpath('model_large.h5')
     parser.add_argument('--file', type=str, help='filename')
-    parser.add_argument('--num-thread', type=int, help='number of threads', default=4)
-    parser.add_argument('--ne', type=float, help='effective population size', default=1e5)
-    parser.add_argument('--length', type=float, help='genome length', default=None)
-    parser.add_argument('--ploidy', type=int, help='ploidy (default 1)', default=1)
-    parser.add_argument('--threshold', type=float, help='hotspot threshold', default=5e-8)
-    parser.add_argument('--gws', type=int, help='global window size', default=1000)
-    parser.add_argument('--ws', type=int, help='window size', default=50)
-    parser.add_argument('--ss', type=int, help='step size', default=None)
-    parser.add_argument('--res', type=float, help='resolution(bp)', default=1e4)
-    parser.add_argument('--m1', type=str, help='fine-model path', default=None)
-    parser.add_argument('--m2', type=str, help='large-model path', default=None)
+    parser.add_argument('--num-thread', type=int, help='number of threads', default=Config.NUM_THREAD)
+    parser.add_argument('--ne', type=float, help='effective population size', default=Config.POPULATION_SIZE)
+    parser.add_argument('--length', type=float, help='genome length', default=Config.LENGTH)
+    parser.add_argument('--ploidy', type=int, help='ploidy (default 2)', default=Config.PLOIDY)
+    parser.add_argument('--threshold', type=float, help='hotspot threshold', default=Config.THRESHOLD)
+    parser.add_argument('--gws', type=int, help='global window size', default=Config.GLOBAL_WINDOW_SIZE)
+    parser.add_argument('--ws', type=int, help='window size', default=Config.WINDOW_SIZE)
+    parser.add_argument('--ss', type=int, help='step size', default=Config.STEP_SIZE)
+    parser.add_argument('--res', type=float, help='resolution(bp)', default=Config.RESOLUTION)
+    parser.add_argument('--m1', type=str, help='fine-model path', default=Config.MODEL_FINE)
+    parser.add_argument('--m2', type=str, help='large-model path', default=Config.MODEL_LARGE)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
     parser.add_argument('--verbose', help='show loggings', action='store_true')

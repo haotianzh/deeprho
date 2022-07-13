@@ -7,7 +7,6 @@ There are 4 subcommands so far: estimate, simulate, train, test.
 
 """
 import logging
-
 import argparse
 from deeprho import __version__
 from deeprho.estimate import gt_args as est_args

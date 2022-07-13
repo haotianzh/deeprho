@@ -5,12 +5,14 @@
 """
 import os
 import logging
-import pandas as pd
+from deeprho import LazyLoader
 import numpy as np
-import re
 from collections import deque, namedtuple
-import msprime as msp
 from ..base import Haplotype
+pd = LazyLoader('pandas')
+msp = LazyLoader('msp')
+# import pandas as pd
+# import msprime as msp
 
 
 use_pyvcf = False
