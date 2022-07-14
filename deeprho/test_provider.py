@@ -58,10 +58,10 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='simulate whole genome')
     gt_args(parser)
-    args = parser.parse_args(['--npop','50',
+    args = parser.parse_args(['--npop','100',
                               '--ploidy', '2',
                               '--ne', '1e4',
                               '--rate-map', '../examples/test_recombination_map.txt',
                               '--demography', '../examples/ACB_pop_sizes.csv',
-                              '--out', 'test.vcf'])
+                              '--out', '../garbo/test.vcf'])
     run(args)

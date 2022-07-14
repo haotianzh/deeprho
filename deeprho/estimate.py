@@ -149,12 +149,14 @@ def run(args):
     step_size = args.ss
     if step_size is None:
         step_size = args.ws
-
+    ne = args.ne
+    if args.demography is not None:
+        ne = utils.calculate_average_ne(args.demography)
     paras = {
         'haplotype': haplotype,
         'num_thread': args.num_thread,
         'sequence_length': length,
-        'ne': args.ne,
+        'ne': ne,
         'global_window_size': args.gws,
         'window_size': args.ws,
         'step_size': step_size,
@@ -177,7 +179,8 @@ def run(args):
 def gt_args(parser):
     parser.add_argument('--file', type=str, help='filename')
     parser.add_argument('--num-thread', type=int, help='number of threads', default=CONFIG.NUM_THREAD)
-    parser.add_argument('--ne', type=float, help='effective population size', default=CONFIG.POPULATION_SIZE)
+    parser.add_argument('--ne', type=float, help='effective population size', default=CONFIG.EFFECTIVE_POPULATION_SIZE)
+    parser.add_argument('--demography', help='demography history', default=CONFIG.DEMOGRAPHY)
     parser.add_argument('--length', type=float, help='genome length', default=CONFIG.LENGTH)
     parser.add_argument('--ploidy', type=int, help='ploidy (default 2)', default=CONFIG.PLOIDY)
     parser.add_argument('--threshold', type=float, help='hotspot threshold', default=CONFIG.THRESHOLD)
@@ -196,10 +199,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
     args = parser.parse_args(['--file', '../garbo/test.vcf',
+                              '--demography', '../examples/ACB_pop_sizes.csv',
                               '--ploidy', '2',
-                              '--m1', '../models/model_fine.h5',
-                              '--m2', '../models/model_large.h5',
-                              '--ne', '20480',
+                              '--m1', '../models/model_epoch_99.hdf5',
+                              '--m2', '../models/model_epoch_123.hdf5',
                               '--res', '1e3',
                               '--plot',
                               '--verbose'])

@@ -1,5 +1,4 @@
-from ..base import Replicate, Haplotype
-import os
+from ..base import Haplotype
 import pandas as pd
 import numpy as np
 import scipy
@@ -88,7 +87,14 @@ def stat(rates, pos, sequence_length, ne=1e5, window_size=50, step_size=50, bin_
     return scaledY, bounds, (bin_edges[:-1], v)
 
 
-def calculate_average_ne(times, sizes):
+def calculate_average_ne(file):
+    demography = pd.read_csv(file)
+    times = demography['x'].to_numpy()
+    sizes = demography['y'].to_numpy()
+    return _calculate_average_ne(times, sizes)
+
+
+def _calculate_average_ne(times, sizes):
     """
         Calculate effective population size given demographic history.
         Formula: Ne = T / (T_1/N_1 + T_2/N_2 + ... + T_k/N_k)

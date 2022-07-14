@@ -1,7 +1,7 @@
 """
     Global configurations in deeprho.
 """
-import multiprocessing as mp
+import os
 
 
 class CONFIG:
@@ -11,8 +11,9 @@ class CONFIG:
     """
 
     # global default settings
-    NUM_THREAD = mp.cpu_count() // 2    # Take a half cores
-    POPULATION_SIZE = 5e4   # Diploid effective population size
+    NUM_THREAD = os.cpu_count() // 2    # Take a half cores
+    GENERATION = 20 # Years per generation
+    EFFECTIVE_POPULATION_SIZE = 5e4   # Diploid effective population size
     PLOIDY = 2  # Diploid as default
     SCALE_FACTOR = 10   # Normalizing factor for scaled rho to speed up training,\
                         # in training set and test set, rhos are divided by this factor

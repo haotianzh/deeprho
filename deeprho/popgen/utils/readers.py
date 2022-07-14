@@ -6,11 +6,12 @@
 import os
 import logging
 from deeprho import LazyLoader
+from deeprho.config import CONFIG
 import numpy as np
 from collections import deque, namedtuple
 from ..base import Haplotype
 pd = LazyLoader('pandas')
-msp = LazyLoader('msp')
+msp = LazyLoader('msprime')
 
 
 use_pyvcf = False
@@ -229,28 +230,29 @@ def _parse_vcf_metadata(st):
     return {entities[0]: entities[1]}
 
 
-def load_demography_from_file(file, generation=GENERATION):
+def load_demography_from_file(file, mode='year', generation=CONFIG.GENERATION):
     """
         Load demography from file using msprime
         # xxx_pop_sizes.csv
-        ======================================================================
-        |label	|x                  |y	                |plot_type	|plot_num|
-        |--------------------------------------------------------------------|
-        |ACB	|0.0	            |138482.84333082315	|path	    |0       |
-        |ACB	|50.0	            |138482.84333082315	|path	    |0       |
-        |ACB	|53.97505585700569  |139331.82583178935	|path	    |0       |
-        ======================================================================
-        Input: smc++ output  (5 columns)
+        --------------------------------------------
+        label   x       y       plot_type   plot_num
+        ACB     0.0     138482  path        0
+        ACB     50.0    138482  path        0
+        ACB     53.9    139331  path        0
+        -------------------/------------------------
+        Input: smc++ output, mode='year' or 'generation', years per generation
         Return: msprime.Demography object
     """
     check_file_existence(file)
+    modes = ['year', 'generation']
+    assert mode in modes, "mode should be either 'year' or 'generation'."
     demography_file = pd.read_csv(file)
     assert demography_file['label'].unique().size == 1, 'there are more than one population.'
     demography = msp.Demography()
     population_name = demography_file['label'][0]
-    demography.add_population(name=population_name, initial_size=1e5)
+    demography.add_population(name=population_name, initial_size=0)
     for i, row in demography_file.iterrows():
-        demography.add_population_parameters_change(time=row['x']/generation, initial_size=row['y'])
+        demography.add_population_parameters_change(time=row['x']/(generation if mode == 'year' else 1), initial_size=row['y'])
     return demography
 
 
@@ -258,9 +260,10 @@ def load_recombination_map_from_file(file, background_rate=1e-10):
     """
         Load recombination map from file.
         If the intervals are not consecutive, the uncovered region will be padded as *background_rate*.
+        # xxx_recombination_map.txt
         --------------------
-        Start	End	Rate
-        0	4000	1e-9
+        Start	End	    Rate
+        0	    4000	1e-9
         4000	9000	1e-9
         9000	11000	1e-8
         11000	20000	1e-7
