@@ -109,7 +109,7 @@ def run(args):
         rhos += result[2]
 
     # build the whole set, train set and test set. compute Linkage Disequilibrium, ld_cluster, Robinson-Foulds distance, and also triplet distance.
-    rf_distance = popgen.utils.rfdist([list(val) for val in genealogies], num_thread=args.num_thread)
+    rf_distance = popgen.utils.rf_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     tri_distance = popgen.utils.triplet_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     lds = popgen.utils.linkage_disequilibrium(haplotypes)
     lds = np.expand_dims(np.array(lds), axis=-1)

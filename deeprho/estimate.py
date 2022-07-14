@@ -93,7 +93,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     # calculate distance
     logger.info('calculating distances')
     lds = utils.linkage_disequilibrium(haplotypes)
-    rfs = utils.rfdist(_slices, num_thread=num_thread)
+    rfs = utils.rf_dist(_slices, num_thread=num_thread)
     tris = utils.triplet_dist(_slices, num_thread=num_thread)
     lds = np.expand_dims(np.array(lds, np.float32), axis=-1)
     rfs = np.expand_dims(np.array(rfs, np.float32), axis=-1) / (2*(n_pop-3))

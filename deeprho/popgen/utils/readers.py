@@ -11,8 +11,6 @@ from collections import deque, namedtuple
 from ..base import Haplotype
 pd = LazyLoader('pandas')
 msp = LazyLoader('msp')
-# import pandas as pd
-# import msprime as msp
 
 
 use_pyvcf = False
@@ -24,19 +22,15 @@ except:
     logger.warning('PyVCF module not installed, use builtin VCF reader.')
 
 
-# define hyperparameter in demography
-GENERATION = 25
-
-
 def check_file_existence(file):
     assert os.path.exists(file), f'file {file} does not exist.'
 
 
 def load_ms_from_file(file, true_genealogy=False):
     """
-        load haplotype data from ms-formatted file.
+        Load haplotype data from ms-formatted file.
         Input: file path, true_genealogy = True if "-T" option is specified in simulation. (currently not implemented)
-        Output: Haplotype
+        Return: Haplotype
     """
     check_file_existence(file)
     f = open(file, 'r')
@@ -83,17 +77,21 @@ def load_ms_from_file(file, true_genealogy=False):
 
 
 def load_vcf_from_file(file):
+    """
+        Read haplotype data from VCF file in two ways, 1. use PyVCF module 2. or use built-in method
+        Input: filename
+        Return: Haplotype
+    """
     if use_pyvcf:
         return _load_vcf_from_file_1(file)
     return _load_vcf_from_file_2(file)
 
 
-# use PyVCF, but issues sometimes happen during pip install.
 def _load_vcf_from_file_1(file):
     """
-        Use PyVCF module for reading VCF.
-        Input: file path
-        Output: Haplotype
+        Use PyVCF module for reading VCF, Issues sometimes happen during pip install.
+        Input: filename
+        Return: Haplotype
     """
     check_file_existence(file)
     reader = vcf.Reader(open(file, 'r'))
@@ -123,8 +121,8 @@ def _load_vcf_from_file_1(file):
 def _load_vcf_from_file_2(file):
     """
         Built-in module for reading VCF. Missing sites and unphased sites are filtered.
-        Input: file path
-        Output: Haplotype
+        Input: filename
+        Return: Haplotype
     """
     check_file_existence(file)
     vcf = read_vcf(file)
@@ -169,7 +167,7 @@ def read_vcf(file):
         Read VCF file.
         VCF v4.2 docs: https://samtools.github.io/hts-specs/VCFv4.2.pdf
         Input: VCF file path
-        Output: namedtuplle(metadata, data)
+        Return: namedtuplle(metadata, data)
     """
     # check_file_existence(file)
     # read meta
@@ -197,8 +195,8 @@ def _parse_vcf_metadata(st):
     """
         Parse string like:
         "##INFO=<ID=ID,Number=number,Type=type,Description="description",Source="source",Version="version">"
-
-        Output: a json string
+        Input: a string
+        Return: a json string
     """
     entities = deque()
     st = st[2:]
@@ -234,7 +232,7 @@ def _parse_vcf_metadata(st):
 def load_demography_from_file(file, generation=GENERATION):
     """
         Load demography from file using msprime
-        Input: smc++ output  (5 columns)
+        # xxx_pop_sizes.csv
         ======================================================================
         |label	|x                  |y	                |plot_type	|plot_num|
         |--------------------------------------------------------------------|
@@ -242,7 +240,8 @@ def load_demography_from_file(file, generation=GENERATION):
         |ACB	|50.0	            |138482.84333082315	|path	    |0       |
         |ACB	|53.97505585700569  |139331.82583178935	|path	    |0       |
         ======================================================================
-        Output: msprime.Demography object
+        Input: smc++ output  (5 columns)
+        Return: msprime.Demography object
     """
     check_file_existence(file)
     demography_file = pd.read_csv(file)
@@ -258,7 +257,6 @@ def load_demography_from_file(file, generation=GENERATION):
 def load_recombination_map_from_file(file, background_rate=1e-10):
     """
         Load recombination map from file.
-        Input: a deeprho output formatted file, details as follows.
         If the intervals are not consecutive, the uncovered region will be padded as *background_rate*.
         --------------------
         Start	End	Rate
@@ -268,7 +266,9 @@ def load_recombination_map_from_file(file, background_rate=1e-10):
         11000	20000	1e-7
         20000	30000	1e-9
         30000	100000	1e-8
-        ----------------------
+        ---------------------
+        Input: a deeprho output formatted file, details shown as above
+        Return: a msprime RateMap
     """
     check_file_existence(file)
     rate_map_file = pd.read_csv(file, sep='\t')

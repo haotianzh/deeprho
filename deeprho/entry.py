@@ -1,10 +1,8 @@
 """
-Author: Haotian Z
-Entrance of deeprho.
-All ops of deeprho can be executed by typing: deeprho [subcommand] [arguments]
-
-There are 4 subcommands so far: estimate, simulate, train, test.
-
+    Author: Haotian Z
+    Entrance of deeprho.
+    All ops of deeprho can be executed by typing: deeprho [subcommand] [arguments]
+    There are 4 subcommands so far: estimate, simulate, train, test.
 """
 import logging
 import argparse

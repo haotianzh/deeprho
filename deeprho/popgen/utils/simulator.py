@@ -4,7 +4,6 @@ import numpy as np
 import warnings
 from deeprho import LazyLoader
 msp = LazyLoader('msprime')
-# import msprime as msp
 
 
 logger = logging.getLogger(__name__)
@@ -29,26 +28,26 @@ class ExpLogGenerator(object):
 
 class Simulator(object):
     """
-    Using for creating simulated data.
-    calling method:
-        nsam: number of samples
-        nreps: number of replicates
-    configs:
-        rate: mutation rate (per base)
-        recombination_rate: recombination rate (per base)
-        sequence_length: length of simulated genome (bp)
-        population_size(or demography): either one of them should be specified
-        ploidy: haploid or diploid
-    examples:
-        sim_configs = {'rate': 1e-8,
-                    'recombination_rate': 1e-8,
-                    'sequence_length': 1e5,
-                    'ploidy': 1,
-                    'population_size': 1e5}
-        simulator = Simulator(sim_configs)
-        # simulate a genome with 10 individuals
-        for genome in simulator(10, 1):
-            pass
+        Use to return a generator for simulating data.
+        calling method:
+            nsam: number of samples
+            nreps: number of replicates
+        configs:
+            rate: mutation rate (per base)
+            recombination_rate: recombination rate (per base)
+            sequence_length: length of simulated genome (bp)
+            population_size(or demography): either one of them should be specified
+            ploidy: haploid or diploid
+        examples:
+            sim_configs = {'rate': 1e-8,
+                        'recombination_rate': 1e-8,
+                        'sequence_length': 1e5,
+                        'ploidy': 1,
+                        'population_size': 1e5}
+            simulator = Simulator(sim_configs)
+            # simulate a genome with 10 individuals
+            for genome in simulator(10, 1):
+                pass
     """
 
     def __init__(self, configs=None):

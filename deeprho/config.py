@@ -7,7 +7,7 @@ import multiprocessing as mp
 class CONFIG:
     """
         Default settings in deeprho.
-        See "https://github.com/haotianzh/deeprho_v2/blob/main/README.md"
+        See https://github.com/haotianzh/deeprho_v2/blob/main/README.md
     """
 
     # global default settings

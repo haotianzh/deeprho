@@ -11,13 +11,13 @@ description: utils for trees
 
 class TraversalGenerator(object):
     """
-    A generator class used for tree traversal
-    Arguments:
-        order: traversal order
-    >>> generator = TraversalGenerator(order='post')
-    >>> for node in generator(tree):
-            # to do something
-            pass
+        A generator class used for tree traversal
+        Arguments:
+            order: traversal order
+        >>> generator = TraversalGenerator(order='post')
+        >>> for node in generator(tree):
+                # to do something
+                pass
     """
 
     def __init__(self, order='post'):
