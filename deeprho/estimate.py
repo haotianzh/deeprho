@@ -1,5 +1,10 @@
+"""
+    Estimator of recombination rate. Be capable to scale properly even under demography.
+    Author: ZHT
+"""
+
+
 import os
-import pathlib
 import argparse
 import pathlib
 import coloredlogs
@@ -7,16 +12,10 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 from deeprho import LazyLoader
-from deeprho.config import Config
+from deeprho.config import CONFIG
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-# import popgen related lib
 tf = LazyLoader('tensorflow')
 utils = LazyLoader('deeprho.popgen.utils')
-
-# from deeprho.popgen.utils import load_vcf_from_file, load_ms_from_file
-# from deeprho.popgen.utils import filter_none_mutation, sliding_windows, stat
-# from deeprho.popgen.utils import rentplus, rfdist, triplet_dist, linkage_disequilibrium
-# how much the scaling for rate during training. 10 means 10x
 logger = logging.getLogger(__name__)
 
 
@@ -52,7 +51,7 @@ def output(rates, out_name):
             if not rate == rates[start]:
                 out.write(f'\n{start}\t{i}\t{rates[start]}')
                 start = i
-    print(f"result is saved as '{out_name}'")
+    print(f"result is saved as '{os.path.abspath(out_name)}'")
 
 
 def plot(rates, threshold, out_name):
@@ -64,7 +63,7 @@ def plot(rates, threshold, out_name):
     plt.axhline(y=threshold, color='r', linestyle='--', label='hotspot threshold')
     plt.legend()
     plt.savefig(out_name, dpi=100)
-    print(f"figure is saved as '{out_name}'")
+    print(f"figure is saved as '{os.path.abspath(out_name)}'")
 
 
 def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_size=50,
@@ -108,7 +107,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     model_large = tf.keras.models.load_model(model_large_path)
     logger.info('predicting')
     rates = model_fine.predict(x, verbose=0)
-    rates_large = model_large.predict(x, verbose=0) * Config.SCALE_FACTOR
+    rates_large = model_large.predict(x, verbose=0) * CONFIG.SCALE_FACTOR
     scaled_rates, _, __ = utils.stat(rates, haplotype.positions,
                                sequence_length=sequence_length,
                                bin_width=resolution,
@@ -167,31 +166,27 @@ def run(args):
         'resolution': args.res
     }
     rates = estimate(**paras)
-    out_prefix = pathlib.Path(args.file).name.split('.')[0]
-    output(rates, out_prefix+'.out.txt')
+    output(rates, args.file + '.rate.txt')
     if args.savenp:
-        np.save(out_prefix + '.out.npy', rates)
-        print(f"numpy object is saved as '{out_prefix + '.out.npy'}'")
+        np.save(args.file + '.rate.npy', rates)
+        print(f"numpy object is saved as '{os.path.abspath(args.file + '.rate.npy')}'")
     if args.plot:
-        plot(rates, args.threshold, out_prefix + '.out.png')
+        plot(rates, args.threshold, args.file + '.rate.png')
 
 
 def gt_args(parser):
-    # model_default_dir = pathlib.Path(popgen.__file__).parent.parent.joinpath('models')
-    # model_fine_default_path = model_default_dir.joinpath('model_fine.h5')
-    # model_large_default_path = model_default_dir.joinpath('model_large.h5')
     parser.add_argument('--file', type=str, help='filename')
-    parser.add_argument('--num-thread', type=int, help='number of threads', default=Config.NUM_THREAD)
-    parser.add_argument('--ne', type=float, help='effective population size', default=Config.POPULATION_SIZE)
-    parser.add_argument('--length', type=float, help='genome length', default=Config.LENGTH)
-    parser.add_argument('--ploidy', type=int, help='ploidy (default 2)', default=Config.PLOIDY)
-    parser.add_argument('--threshold', type=float, help='hotspot threshold', default=Config.THRESHOLD)
-    parser.add_argument('--gws', type=int, help='global window size', default=Config.GLOBAL_WINDOW_SIZE)
-    parser.add_argument('--ws', type=int, help='window size', default=Config.WINDOW_SIZE)
-    parser.add_argument('--ss', type=int, help='step size', default=Config.STEP_SIZE)
-    parser.add_argument('--res', type=float, help='resolution(bp)', default=Config.RESOLUTION)
-    parser.add_argument('--m1', type=str, help='fine-model path', default=Config.MODEL_FINE)
-    parser.add_argument('--m2', type=str, help='large-model path', default=Config.MODEL_LARGE)
+    parser.add_argument('--num-thread', type=int, help='number of threads', default=CONFIG.NUM_THREAD)
+    parser.add_argument('--ne', type=float, help='effective population size', default=CONFIG.POPULATION_SIZE)
+    parser.add_argument('--length', type=float, help='genome length', default=CONFIG.LENGTH)
+    parser.add_argument('--ploidy', type=int, help='ploidy (default 2)', default=CONFIG.PLOIDY)
+    parser.add_argument('--threshold', type=float, help='hotspot threshold', default=CONFIG.THRESHOLD)
+    parser.add_argument('--gws', type=int, help='global window size', default=CONFIG.GLOBAL_WINDOW_SIZE)
+    parser.add_argument('--ws', type=int, help='window size', default=CONFIG.WINDOW_SIZE)
+    parser.add_argument('--ss', type=int, help='step size', default=CONFIG.STEP_SIZE)
+    parser.add_argument('--res', type=float, help='resolution(bp)', default=CONFIG.RESOLUTION)
+    parser.add_argument('--m1', type=str, help='fine-model path', default=CONFIG.MODEL_FINE)
+    parser.add_argument('--m2', type=str, help='large-model path', default=CONFIG.MODEL_LARGE)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
     parser.add_argument('--verbose', help='show loggings', action='store_true')
@@ -200,11 +195,11 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args(['--file', '../examples/data.vcf',
+    args = parser.parse_args(['--file', '../garbo/test.vcf',
                               '--ploidy', '2',
                               '--m1', '../models/model_fine.h5',
                               '--m2', '../models/model_large.h5',
-                              '--ne', '1e5',
+                              '--ne', '20480',
                               '--res', '1e3',
                               '--plot',
                               '--verbose'])

@@ -1,39 +1,20 @@
+"""
+    Module for data simulation under scenarios users specify.
+    Author: ZHT
+"""
+
+
 import os
-import time
 import logging
 from deeprho import LazyLoader
-from deeprho.config import Config
+from deeprho.config import CONFIG
 import argparse
 import coloredlogs
 import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
-import multiprocessing as mp
 from multiprocessing.dummy import Pool
 popgen = LazyLoader('deeprho.popgen')
-##########################################################################
-# Settings of deeprho:
-#   global_window_size = 1000 (for genealogies inference through RENT+)
-#   window_size = 50 (for estimates' resolution (usually larger window size shows better performance))
-# Settings of simulator:
-#   n_sam = 1000
-#   n_draw = 5
-#   n_pop = 100
-#   ne = 1e5
-#   ploidy = 1
-#   mutation_rate = 2.5e-8
-#   sequence_length = 5e5
-#   r_min = 1e-9
-#   r_max = 1e-6
-#
-# configs = {
-#     'sequence_length': 5e5,
-#     'population_size': 1e5,
-#     'rate': 2.5e-8,
-#     'recombination_rate': 3.9e-8,
-#     'ploidy': 1
-# }
-##########################################################################
 logger = logging.getLogger(__name__)
 global_window_size = 1000
 window_size = 50
@@ -139,16 +120,16 @@ def run(args):
     save_training_data(args.out, (data, rhos))
     
 def gt_args(parser):
-    parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=Config.N_SAMPLE)
-    parser.add_argument('--ndraw', type=int, help='number of draws per sample', default=Config.N_DRAW)
-    parser.add_argument('--npop', type=int, help='number of individual', default=Config.N_POP)
-    parser.add_argument('--ne', type=float, help='effective population size', default=Config.POPULATION_SIZE)
-    parser.add_argument('--ploidy', type=int, help='ploidy', default=Config.PLOIDY)
-    parser.add_argument('--mutation-rate', type=float, help='mutation rate', default=Config.MUTATION_RATE)
-    parser.add_argument('--demography', type=str, help='demography file path', default=Config.DEMOGRAPHY)
-    parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=Config.R_MIN)
-    parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=Config.R_MAX)
-    parser.add_argument('--num-thread', type=int, help='number of threads', default=Config.NUM_THREAD)
+    parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=CONFIG.N_SAMPLE)
+    parser.add_argument('--ndraw', type=int, help='number of draws per sample', default=CONFIG.N_DRAW)
+    parser.add_argument('--npop', type=int, help='number of individual', default=CONFIG.N_POP)
+    parser.add_argument('--ne', type=float, help='effective population size', default=CONFIG.POPULATION_SIZE)
+    parser.add_argument('--ploidy', type=int, help='ploidy', default=CONFIG.PLOIDY)
+    parser.add_argument('--mutation-rate', type=float, help='mutation rate', default=CONFIG.MUTATION_RATE)
+    parser.add_argument('--demography', type=str, help='demography file path', default=CONFIG.DEMOGRAPHY)
+    parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=CONFIG.R_MIN)
+    parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=CONFIG.R_MAX)
+    parser.add_argument('--num-thread', type=int, help='number of threads', default=CONFIG.NUM_THREAD)
     parser.add_argument('--out', type=str, help='output path')
     parser.add_argument('--verbose', help='show loggings', action='store_true')
 

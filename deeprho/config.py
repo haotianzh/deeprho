@@ -4,7 +4,12 @@
 import multiprocessing as mp
 
 
-class Config:
+class CONFIG:
+    """
+        Default settings in deeprho.
+        See "https://github.com/haotianzh/deeprho_v2/blob/main/README.md"
+    """
+
     # global default settings
     NUM_THREAD = mp.cpu_count() // 2    # Take a half cores
     POPULATION_SIZE = 5e4   # Diploid effective population size
@@ -30,6 +35,8 @@ class Config:
     DEMOGRAPHY = None   # Demography settings, see Docs
     R_MIN = 1e-9    # Minimum recombination rate to simulate
     R_MAX = 5e-7    # Maximum recombination rate to simulate
+
+    # retrain.py
 
 
 

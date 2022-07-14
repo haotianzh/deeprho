@@ -31,7 +31,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
 - #### [deeprho estimate](#estimate)
     ```python
     # given a .vcf file, use default models and plot the estimated recombination map. 
-    deeprho estiamte --file examples/data.vcf --length 1e5 --ne 1e5 --ploidy 2 --m1 models/model_fine.hdf5 --m2 models/model_large.hdf5 --plot
+    deeprho estiamte --file examples/data.vcf --length 1e5 --ne 1e5 --ploidy 2 --m1 models/model_fine.hdf5 --m2 models/model_large.hdf5 --plot --verbose
   ```
 - #### [deeprho simulate](#simulate)
     ```python
@@ -40,11 +40,11 @@ DeepRho constructs images from population genetic data and takes advantage of th
     ```
 
 ### Output 
-Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
+Default output name is formatted as `<FILE>.rate[.txt|.png|.npy]` in the same directory as your input file.
 - `.txt` file consists of 3 columns *Start*, *End*, *Rate* seperated by tab. Each row gives a *Rate* in a region located from *Start* to *End*.
     a simple output likes:
     ```python
-    ## data.out.txt
+    ## your_vcf_file_name.rate.txt
     Start	End	Rate
     0	8	0.0
     8	1822	2.862294427352283e-08
@@ -57,7 +57,7 @@ Default output name is formatted as `<FILE>.out[.txt|.png|.npy]`
     ```
 - `.png` file stores a plot of recombination map which gives a simple visualization.
 
-   <img src="data.out.png" alt="isolated" width="600" />
+   <img src="your_vcf_file_name.rate.png" alt="isolated" width="600" />
 
 - `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 
