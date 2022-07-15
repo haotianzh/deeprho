@@ -31,7 +31,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
 - #### [deeprho estimate](#estimate)
     ```python
     # given a .vcf file, use default models and plot the estimated recombination map. 
-    deeprho estiamte --file examples/data.vcf --length 1e5 --ne 1e5 --ploidy 2 --m1 models/model_fine.hdf5 --m2 models/model_large.hdf5 --plot --verbose
+    deeprho estimate --file examples/data.vcf --length 1e5 --ne 1e5 --ploidy 2 --m1 models/model_fine.h5 --m2 models/model_large.h5 --plot --verbose
   ```
 - #### [deeprho simulate](#simulate)
     ```python

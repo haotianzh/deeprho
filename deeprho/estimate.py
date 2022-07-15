@@ -198,7 +198,7 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args(['--file', '../garbo/test.vcf',
+    args = parser.parse_args(['--file', '../garbo/test2.vcf',
                               '--demography', '../examples/ACB_pop_sizes.csv',
                               '--ploidy', '2',
                               '--m1', '../models/model_epoch_99.hdf5',

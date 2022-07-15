@@ -10,6 +10,7 @@ from deeprho.config import CONFIG
 import numpy as np
 from collections import deque, namedtuple
 from ..base import Haplotype
+from .statistics import _calculate_average_ne
 pd = LazyLoader('pandas')
 msp = LazyLoader('msprime')
 
@@ -248,12 +249,64 @@ def load_demography_from_file(file, mode='year', generation=CONFIG.GENERATION):
     assert mode in modes, "mode should be either 'year' or 'generation'."
     demography_file = pd.read_csv(file)
     assert demography_file['label'].unique().size == 1, 'there are more than one population.'
-    demography = msp.Demography()
-    population_name = demography_file['label'][0]
-    demography.add_population(name=population_name, initial_size=0)
+    name = demography_file['label'][0]
+    times = []
+    sizes = []
     for i, row in demography_file.iterrows():
-        demography.add_population_parameters_change(time=row['x']/(generation if mode == 'year' else 1), initial_size=row['y'])
+        times.append(row['x'] / (generation if mode == 'year' else 1))
+        sizes.append(row['y'])
+    return _load_demography(name, times, sizes)
+
+
+def _load_demography(name, times, sizes):
+    demography = msp.Demography()
+    demography.add_population(name=name, initial_size=0)
+    for time, size in zip(times, sizes):
+        demography.add_population_parameters_change(time=time, initial_size=size)
     return demography
+
+
+def parse_ms_command(ms_command, initial_size=CONFIG.EFFECTIVE_POPULATION_SIZE):
+    """
+        Parse ms command, especially, demographic events (In ms, time is scaled by 4N_0)
+        Example:
+            ms 2 100 -t 81960 -r 13560 30000000 -eN 0.01 0.05 -eN 0.0375 0.5 -eN 1.25 1
+        Input: a ms command string
+        Return: a dictionary of parameters
+    """
+    parameters = {'-t': 1, '-r': 2, '-eN': 2}
+    ms_to_msprime = {'-t': 'rate', '-r': 'recombination_rate', '-eN': 'demography'}
+    commands = ms_command.strip().split()
+    program_name = commands[0]
+    n_sam = commands[1]
+    n_rep = commands[2]
+    i = 3
+    parse_result = {}
+    while i < len(commands):
+        command = commands[i]
+        args = []
+        try:
+            for i in range(i+1, i+parameters[command]+1):
+                args.append(command[i])
+            parse_result[ms_to_msprime[command]] = args
+            i += 1
+        except KeyError:
+            raise Exception('no such arg.')
+        except IndexError:
+            raise Exception('parse error.')
+    sequence_length = parse_result['recombination_rate'][1]
+    recombination_rate = parse_result['recombination_rate'][0] / sequence_length
+    times = []
+    sizes = []
+    for i in range(0, len(parse_result['demography']), 2):
+        times.append(parse_result['demography'][i] * 4 * initial_size)
+        sizes.append(parse_result['demography'][i+1] * initial_size)
+    res = {}
+    res['program']
+
+
+
+
 
 
 def load_recombination_map_from_file(file, background_rate=1e-10):
@@ -263,7 +316,7 @@ def load_recombination_map_from_file(file, background_rate=1e-10):
         # xxx_recombination_map.txt
         --------------------
         Start	End	    Rate
-        0	    4000	1e-9
+        0	4000	1e-9
         4000	9000	1e-9
         9000	11000	1e-8
         11000	20000	1e-7
