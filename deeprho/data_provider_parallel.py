@@ -50,7 +50,7 @@ def save_training_data(path, data):
     with open(path, mode='wb') as out:
         pickle.dump((x_train, x_test, y_train, y_test), out)
     logger.info(f'train size: {x_train.shape[0]}. test size: {x_test.shape[0]}')
-    print(f'training data has been stored in {args.out}')
+    print(f'training data has been stored in {path}')
 
 
 def simulate(configs, args, r):
