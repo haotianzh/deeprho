@@ -15,12 +15,11 @@ DeepRho constructs images from population genetic data and takes advantage of th
 ### Installation
 1. Clone from GitHub: `git clone https://github.com/haotianzh/deeprho_v2.git` or Download & unzip the file to your local directory.
 2. Enter the directory: `cd deeprho_v2`
-3. Create a virtual environment through conda: `conda create -n deeprho python=3.7`
+3. Create a virtual environment through conda: `conda create -n deeprho python=3.7 openjdk=11 msprime`
 4. Activate conda environment: `conda activate deeprho`
-5. Install [msprime](https://tskit.dev/msprime/docs/stable/installation.html): `conda install msprime -c conda-forge`
-6. [Optional] see [GPU support](#gpu) if you are seeking to use GPU
-7. Build deeprho: `pip install .`
-8. Inspect correct installation: `deeprho -v`
+5. [Optional] see [GPU support](#gpu) if you are seeking to use GPU
+6. Build deeprho: `pip install .`
+7. Inspect correct installation: `deeprho -v`
 
 
 ### Input Formats
@@ -36,7 +35,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
 - #### [deeprho simulate](#simulate)
     ```python
     # sample 10 genomes with recombination rates uniformly spaced between 1e-9 and 1e-8, and use 8 cpus for parallel speeding.
-    deeprho simulate --nsam 10 --npop 50 --mutation-rate 1e-8 --ne 1e5 --rmin 1e-9 --rmax 1e-8 --num-thread 8 
+    deeprho simulate --nsam 10 --npop 50 --mutation-rate 1e-8 --ne 1e5 --rmin 1e-9 --rmax 1e-8 --num-thread 8 --out train_data
     ```
 
 ### Output 
