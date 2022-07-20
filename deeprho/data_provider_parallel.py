@@ -112,12 +112,14 @@ def run(args):
     rf_distance = popgen.utils.rf_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     tri_distance = popgen.utils.triplet_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     lds = popgen.utils.linkage_disequilibrium(haplotypes)
+    n_hap = args.npop * args.ploidy
     lds = np.expand_dims(np.array(lds), axis=-1)
-    rfs = np.expand_dims(np.array(rf_distance), axis=-1)
-    tris = np.expand_dims(np.array(tri_distance), axis=-1)
+    rfs = np.expand_dims(np.array(rf_distance), axis=-1) / (2*(n_hap-3))
+    tris = np.expand_dims(np.array(tri_distance), axis=-1) / (n_hap*(n_hap-1)*(n_hap-2)/6)
     data = np.concatenate([lds,rfs,tris], axis=-1).astype(np.float64)
     rhos = np.array(rhos).reshape(-1,1)
     save_training_data(args.out, (data, rhos))
+
     
 def gt_args(parser):
     parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=CONFIG.N_SAMPLE)
@@ -137,8 +139,8 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('data simulator')
     gt_args(parser)
-    args = parser.parse_args(['--nsam', '10',
-                              '--npop', '100',
+    args = parser.parse_args(['--nsam', '2',
+                              '--npop', '50',
                               '--ne', '1e4',
                               '--ploidy', '2',
                               '--rmin', '1e-9',

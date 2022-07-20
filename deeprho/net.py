@@ -14,7 +14,7 @@ def _block1(x, features, kernel_size, pool_size, regularizer=False):
     return x
 
 
-def RecombNet1(num_layers, num_features, input_shape, output_shape):
+def recomb_net_1(num_layers, num_features, input_shape, output_shape):
     inputs = layers.Input(shape=input_shape)
     x = layers.Conv2D(num_features[0],
                       kernel_size=(3,3),
@@ -30,10 +30,10 @@ def RecombNet1(num_layers, num_features, input_shape, output_shape):
     x = layers.Dense(64)(x)
     x = layers.Activation('tanh')(x)
     x = layers.Dense(output_shape)(x)
-    return x
+    return inputs, x
 
 
-def RecombNet2(num_layers, num_features, input_shape, output_shape):
+def recomb_net_2(num_layers, num_features, input_shape, output_shape):
     inputs = layers.Input(shape=input_shape)
     x = layers.Conv2D(num_features[0],
                       kernel_size=(3,3),
@@ -49,4 +49,4 @@ def RecombNet2(num_layers, num_features, input_shape, output_shape):
     x = layers.Dense(64)(x)
     x = layers.Activation('tanh')(x)
     x = layers.Dense(output_shape)(x)
-    return x
+    return inputs, x

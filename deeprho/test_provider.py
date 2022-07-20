@@ -55,6 +55,7 @@ def gt_args(parser):
     parser.add_argument('--out', type=str, help='output path')
     parser.add_argument('--verbose', help='show loggings', action='store_true')
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='simulate whole genome')
     gt_args(parser)
