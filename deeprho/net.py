@@ -17,12 +17,12 @@ def _block1(x, features, kernel_size, pool_size, regularizer=False):
 def recomb_net_1(num_layers, num_features, input_shape, output_shape):
     inputs = layers.Input(shape=input_shape)
     x = layers.Conv2D(num_features[0],
-                      kernel_size=(3,3),
+                      kernel_size=(1,1),
                       padding='same',
                       kernel_initializer='he_normal')(inputs)
     # stack CNN blocks
     for i in range(num_layers-1):
-        x = _block1(x, num_features[i+1])
+        x = _block1(x, num_features[i+1], 3, 2)
     # feed-forward, this part is ignored when perform transfer learning
     x = layers.Flatten()(x)
     x = layers.Dense(128)(x)
@@ -41,7 +41,7 @@ def recomb_net_2(num_layers, num_features, input_shape, output_shape):
                       kernel_initializer='he_normal')(inputs)
     # stack CNN blocks
     for i in range(num_layers-1):
-        x = _block1(x, num_features[i+1])
+        x = _block1(x, num_features[i+1], 3, 3)
     # feed-forward, this part is ignored when perform transfer learning
     x = layers.Flatten()(x)
     x = layers.Dense(128)(x)

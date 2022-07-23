@@ -37,8 +37,8 @@ class CONFIG:
     R_MIN = 1e-9    # Minimum recombination rate to simulate
     R_MAX = 5e-7    # Maximum recombination rate to simulate
 
-    # retrain.py
-
+    # TODO test_provider.py
+    # TODO retrain.py
 
 
 

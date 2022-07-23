@@ -36,6 +36,25 @@ def get_deeprho_map(rates, bounds, length):
     return crates
 
 
+def get_deeprho_map_1(rates, bounds):
+    starts = [val[0] for val in bounds]
+    ends = [val[1] for val in bounds]
+    begin = starts[0]
+    end = ends[-1]
+    length = end - begin
+    per_site_rates = [[] for i in range(length+1)]
+    for start, end, r in zip(starts, ends, rates):
+        for i in range(start, end):
+            per_site_rates[i-begin].append(r)
+    crates = np.zeros(length+1, np.float64)
+    for i, r in enumerate(per_site_rates):
+        if r:
+            crates[i] = np.mean(r)
+            # if len(r) == 2:
+            #     crates[i] = np.dot(np.array(r), np.array([0.3,0.7]))
+    return crates
+
+
 def load_data(file):
     _extensions = {'.ms': utils.load_ms_from_file, '.vcf': utils.load_vcf_from_file}
     ext = pathlib.Path(file).suffix
@@ -43,23 +62,23 @@ def load_data(file):
     return _extensions[ext](file)
 
 
-def output(rates, out_name):
+def output(rates, begin, out_name):
     with open(out_name, 'w') as out:
         out.write('Start\tEnd\tRate')
         start = 0
         for i, rate in enumerate(rates):
             if not rate == rates[start]:
-                out.write(f'\n{start}\t{i}\t{rates[start]}')
+                out.write(f'\n{start+begin}\t{i+begin}\t{rates[start]}')
                 start = i
     print(f"result is saved as '{os.path.abspath(out_name)}'")
 
 
-def plot(rates, threshold, out_name):
+def plot(rates, begin, threshold, out_name):
     plt.figure(figsize=(12,6))
     plt.title('deeprho estimates')
     plt.xlabel('bp')
     plt.ylabel('recombination rate')
-    plt.plot(rates, label='deeprho')
+    plt.plot(np.arange(begin, begin+len(rates)), rates, label='deeprho')
     plt.axhline(y=threshold, color='r', linestyle='--', label='hotspot threshold')
     plt.legend()
     plt.savefig(out_name, dpi=100)
@@ -122,8 +141,10 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
                                      step_size=step_size,
                                      ploidy=ploidy,
                                      ne=ne)
-    r_fine = get_deeprho_map(scaled_rates, _, length=sequence_length)
-    r_large = get_deeprho_map(scaled_rates_large, _, length=sequence_length)
+    # r_fine = get_deeprho_map(scaled_rates, _, length=sequence_length, )#head=haplotype.positions[0])
+    # r_large = get_deeprho_map(scaled_rates_large, _, length=sequence_length, )# head=haplotype.positions[0])
+    r_fine = get_deeprho_map_1(scaled_rates, _)
+    r_large = get_deeprho_map_1(scaled_rates_large, _)
     r_fine[r_fine>threshold] = r_large[r_fine>threshold]
     return r_fine
 
@@ -159,7 +180,7 @@ def run(args):
         'ne': ne,
         'global_window_size': args.gws,
         'window_size': args.ws,
-        'step_size': step_size,
+        'step_size': step_size-1,
         'threshold': args.threshold,
         'model_fine_path': args.m1,
         'model_large_path': args.m2,
@@ -168,12 +189,12 @@ def run(args):
         'resolution': args.res
     }
     rates = estimate(**paras)
-    output(rates, args.file + '.rate.txt')
+    output(rates, haplotype.positions[0], args.file + '.rate.txt')
     if args.savenp:
         np.save(args.file + '.rate.npy', rates)
         print(f"numpy object is saved as '{os.path.abspath(args.file + '.rate.npy')}'")
     if args.plot:
-        plot(rates, args.threshold, args.file + '.rate.png')
+        plot(rates, haplotype.positions[0], args.threshold, args.file + '.rate.png')
 
 
 def gt_args(parser):
@@ -198,12 +219,15 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args(['--file', '../garbo/test2.vcf',
-                              '--demography', '../examples/ACB_pop_sizes.csv',
+    args = parser.parse_args(['--file', '../garbo/data.vcf',
+                              # '--demography', '../examples/ACB_pop_sizes.csv',
                               '--ploidy', '2',
+                              '--ne', '1e5',
                               '--m1', '../models/model_epoch_99.hdf5',
                               '--m2', '../models/model_epoch_123.hdf5',
-                              '--res', '1e3',
+                              # '--res', '1e3',
+                              # '--length', '1e5',
                               '--plot',
+                              '--savenp',
                               '--verbose'])
     run(args)
