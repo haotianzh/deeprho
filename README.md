@@ -1,5 +1,5 @@
+<pre style="background-color:rgba(0, 0, 0, 0)">
 
-<pre style="background-color:rgba(0, 0, 0, 0); padding:1px;vertical-align: middle; margin-top:20px">
 ██████╗ ███████╗███████╗██████╗ ██████╗ ██╗  ██╗ ██████╗ 
 ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗██║  ██║██╔═══██╗
 ██║  ██║█████╗  █████╗  ██████╔╝██████╔╝███████║██║   ██║
@@ -7,8 +7,6 @@
 ██████╔╝███████╗███████╗██║     ██║  ██║██║  ██║╚██████╔╝
 ╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝    v2.0
 </pre>
-
-
 DeepRho: software accompanyment for "DeepRho: Accurate Estimation of Recombination Rate from Inferred Genealogies using Deep Learning", Haotian Zhang and Yufeng Wu, manuscript, 2021.
 
 DeepRho constructs images from population genetic data and takes advantage of the power of convolutional neural network (CNN) in image classification to etstimate recombination rate. The key idea of DeepRho is generating genetics-informative images based on inferred gene geneaologies and linkage disequilibrium from population genetic data.
