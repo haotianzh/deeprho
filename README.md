@@ -1,3 +1,12 @@
+```text
+██████╗ ███████╗███████╗██████╗ ██████╗ ██╗  ██╗ ██████╗ 
+██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗██║  ██║██╔═══██╗
+██║  ██║█████╗  █████╗  ██████╔╝██████╔╝███████║██║   ██║
+██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██╔══██╗██╔══██║██║   ██║
+██████╔╝███████╗███████╗██║     ██║  ██║██║  ██║╚██████╔╝
+╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                                                         
+```
+
 ## *DeepRho(v2.0)*
 DeepRho: software accompanyment for "DeepRho: Accurate Estimation of Recombination Rate from Inferred Genealogies using Deep Learning", Haotian Zhang and Yufeng Wu, manuscript, 2021.
 
@@ -56,7 +65,7 @@ Default output name is formatted as `<FILE>.rate[.txt|.png|.npy]` in the same di
     ```
 - `.png` file stores a plot of recombination map which gives a simple visualization.
 
-   <img src="deeprho/example.rate.png" alt="isolated" width="600" />
+   <img src="examples/data.vcf.rate.png" alt="isolated" width="600" />
 
 - `.npy` file stores a numpy object recording recombination rate per base, the i-th element in numpy array denotes the rate between the i-th base and the (i+1)-th base.
 

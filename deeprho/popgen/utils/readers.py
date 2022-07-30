@@ -31,6 +31,7 @@ def check_file_existence(file):
 def load_ms_from_file(file, true_genealogy=False):
     """
         Load haplotype data from ms-formatted file.
+        Note: If there is multiple samples, only the first one will be read in.
         Input: file path, true_genealogy = True if "-T" option is specified in simulation. (currently not implemented)
         Return: Haplotype
     """
@@ -231,7 +232,7 @@ def _parse_vcf_metadata(st):
     return {entities[0]: entities[1]}
 
 
-def load_demography_from_file(file, mode='year', generation=CONFIG.GENERATION):
+def load_demography_from_file(file, mode='generation', generation=CONFIG.GENERATION):
     """
         Load demography from file using msprime
         # xxx_pop_sizes.csv
@@ -284,29 +285,32 @@ def parse_ms_command(ms_command, initial_size=CONFIG.EFFECTIVE_POPULATION_SIZE):
     parse_result = {}
     while i < len(commands):
         command = commands[i]
-        args = []
+        if not ms_to_msprime[command] in parse_result:
+            parse_result[ms_to_msprime[command]] = []
         try:
             for i in range(i+1, i+parameters[command]+1):
-                args.append(command[i])
-            parse_result[ms_to_msprime[command]] = args
+                parse_result[ms_to_msprime[command]].append(commands[i])
             i += 1
         except KeyError:
             raise Exception('no such arg.')
         except IndexError:
             raise Exception('parse error.')
-    sequence_length = parse_result['recombination_rate'][1]
-    recombination_rate = parse_result['recombination_rate'][0] / sequence_length
+    sequence_length = float(parse_result['recombination_rate'][1])
+    recombination_rate = float(parse_result['recombination_rate'][0]) / sequence_length
     times = []
     sizes = []
     for i in range(0, len(parse_result['demography']), 2):
-        times.append(parse_result['demography'][i] * 4 * initial_size)
-        sizes.append(parse_result['demography'][i+1] * initial_size)
+        times.append(float(parse_result['demography'][i]) * 4 * initial_size)
+        sizes.append(float(parse_result['demography'][i+1]) * initial_size)
     res = {}
-    res['program']
-
-
-
-
+    res['program'] = program_name
+    res['nsam'] = n_sam
+    res['nrep'] = n_rep
+    res['sequence_length'] = sequence_length
+    res['recombination_rate'] = recombination_rate
+    res['times'] = times
+    res['sizes'] = sizes
+    return res
 
 
 def load_recombination_map_from_file(file, background_rate=1e-10):

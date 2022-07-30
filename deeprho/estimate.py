@@ -219,12 +219,16 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args(['--file', '../garbo/data.vcf',
-                              # '--demography', '../examples/ACB_pop_sizes.csv',
+    args = parser.parse_args(['--file', '../garbo/test5.vcf',
+                              '--demography', 'ms.txt.demo.csv',
                               '--ploidy', '2',
-                              '--ne', '1e5',
-                              '--m1', '../models/model_epoch_99.hdf5',
-                              '--m2', '../models/model_epoch_123.hdf5',
+                              # '--ne', '1e5',
+                              # '--demography', '../examples/ACB_pop_sizes.csv',
+                              '--m1', '../models/model_fine.h5',
+                              '--m2', '../models/model_large.h5',
+                              # '--m1', '../models/model_epoch_99.hdf5',
+                              # '--m2', '../models/model_epoch_123.hdf5',
+                              # '--ss', '20',
                               # '--res', '1e3',
                               # '--length', '1e5',
                               '--plot',

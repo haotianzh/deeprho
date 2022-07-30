@@ -18,7 +18,7 @@ def build_configuration(args):
         configuration['recombination_rate'] = args.recombination_rate
         configuration['sequence_length'] = args.sequence_length
     if args.demography is not None:
-        configuration['demography'] = popgen.utils.load_demography_from_file(args.demography)
+        configuration['demography'] = popgen.utils.load_demography_from_file(args.demography, mode='generation', generation=29)
     else:
         configuration['population_size'] = args.ne
     return configuration
@@ -59,10 +59,11 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='simulate whole genome')
     gt_args(parser)
-    args = parser.parse_args(['--npop','20',
+    args = parser.parse_args(['--npop','50',
                               '--ploidy', '2',
-                              '--ne', '1e4',
+                              # '--mutation-rate', '2.5e-8',
                               '--rate-map', '../examples/test_recombination_map.txt',
-                              '--demography', '../examples/ACB_pop_sizes.csv',
-                              '--out', '../garbo/test2.vcf'])
+                              # '--demography', '../examples/ACB_pop_sizes.csv',
+                              '--demography', 'ms.txt.demo.csv',
+                              '--out', '../garbo/test5.vcf'])
     run(args)
