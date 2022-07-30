@@ -1,11 +1,12 @@
-```text
+
+<pre style="background-color:rgba(0, 0, 0, 0); padding:1px;vertical-align: middle; margin-top:20px">
 ██████╗ ███████╗███████╗██████╗ ██████╗ ██╗  ██╗ ██████╗ 
 ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗██║  ██║██╔═══██╗
 ██║  ██║█████╗  █████╗  ██████╔╝██████╔╝███████║██║   ██║
 ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██╔══██╗██╔══██║██║   ██║
 ██████╔╝███████╗███████╗██║     ██║  ██║██║  ██║╚██████╔╝
-╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝    V2.0
-```
+╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝    v2.0
+</pre>
 
 
 DeepRho: software accompanyment for "DeepRho: Accurate Estimation of Recombination Rate from Inferred Genealogies using Deep Learning", Haotian Zhang and Yufeng Wu, manuscript, 2021.
