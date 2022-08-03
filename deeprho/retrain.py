@@ -27,23 +27,11 @@ def load_data(filename):
         data = pickle.load(file)
     return data
 
-#
-# def load_weights(model, weights):
-
-
-def _train_large():
-    pass
-
-
-def _train_fine():
-    pass
-
-
 
 def train(args):
     assert args.out is not None, f'output directory should be specified.'
     assert args.data is not None, f'there is no dataset.'
-    assert args.m1 is not None and args.m2 is not None, f'pretrain models should be specified.'
+    # assert args.m1 is not None and args.m2 is not None, f'pretrain models should be specified.'
     # check availability of GPU and set to allow memory growth.
     gpus = tf.config.list_physical_devices("GPU")
     if gpus:
@@ -60,11 +48,15 @@ def train(args):
     print(f'dataset view: train({x_train.shape}), test({x_test.shape})')
     y_train = y_train / args.scale_factor
     y_test = y_test / args.scale_factor
-    input_shape = x_train.shape[1:]
-    inputs, outputs = recomb_net_1(4, [64,256,256,512], input_shape, 1)
-    model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
-    optimizer = tf.keras.optimizers.Adam(0.001)
-    model.compile(loss='mse', optimizer=optimizer, metrics=['mae'])
+    # input_shape = x_train.shape[1:]
+    # inputs, outputs = recomb_net_2(4, [64,256,256,512], input_shape, 1)
+    # model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
+    model = tf.keras.models.load_model('../models/model_large.h5')
+    for layer in model.layers[:18]:
+        layer.trainable = False # set frozen layers
+
+    optimizer = tf.keras.optimizers.Adam(0.01)
+    model.compile(loss='mae', optimizer=optimizer, metrics=['mae'])
     training_epochs = 200
     if not os.path.exists(args.out):
         os.mkdir(args.out)
@@ -87,11 +79,12 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='train')
     gt_args(parser)
-    args = parser.parse_args(['--m1', '2',
-                              '--m2', '50',
-                              '--data', '../garbo/dataset_ld_rf_tri.5',
-                              '--scale-factor', '10',
-                              '--out', '../garbo/models'
+    args = parser.parse_args([
+                              # '--m1', '2',
+                              # '--m2', '50',
+                              '--data', '../data/data4',
+                              '--out', '../data/models2',
+                              '--scale-factor', '10'
                               ])
     train(args)
 
