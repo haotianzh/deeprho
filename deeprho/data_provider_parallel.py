@@ -75,7 +75,8 @@ def simulate(configs, args, r):
                     pop_size = configs['demography'].events[0].initial_size
                 else:
                     pop_size = configs['population_size']
-                scaled_rho = 2 * pop_size * r * length
+                # TODO: need to add ploidy here
+                scaled_rho = 2 * pop_size * r * length * configs.ploidy
                 rhos.append(scaled_rho)
     logger.info(f'complete sampling in {r}, {data}')
     return haplotypes, genealogies, rhos
@@ -108,7 +109,8 @@ def run(args):
         genealogies += result[1]
         rhos += result[2]
 
-    # build the whole set, train set and test set. compute Linkage Disequilibrium, ld_cluster, Robinson-Foulds distance, and also triplet distance.
+    # build the whole set, train set and test set. compute Linkage Disequilibrium, Robinson-Foulds distance,
+    # and also Triplet distance.
     rf_distance = popgen.utils.rf_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     tri_distance = popgen.utils.triplet_dist([list(val) for val in genealogies], num_thread=args.num_thread)
     lds = popgen.utils.linkage_disequilibrium(haplotypes)

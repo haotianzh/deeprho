@@ -1,6 +1,7 @@
 import argparse
 import os
 import logging
+import pickle
 import multiprocessing as mp
 from deeprho import popgen
 from deeprho.data_provider_parallel import global_window_size, window_size
@@ -11,7 +12,9 @@ def build_configuration(args):
     configuration['rate'] = args.mutation_rate
     configuration['ploidy'] = args.ploidy
     if args.rate_map is not None:
-        map = popgen.utils.load_recombination_map_from_file(args.rate_map)
+        # test only
+        map = pickle.load(open(args.rate_map, 'rb'))
+        # map = popgen.utils.load_recombination_map_from_file(args.rate_map)
         configuration['recombination_rate'] = map
         configuration['sequence_length'] = map.sequence_length
     else:
@@ -62,8 +65,10 @@ if __name__ == '__main__':
     args = parser.parse_args(['--npop','50',
                               '--ploidy', '2',
                               # '--mutation-rate', '2.5e-8',
-                              '--rate-map', '../examples/test_recombination_map.txt',
-                              '--demography', '../examples/ACB_pop_sizes.csv',
+                              # '--rate-map', '../examples/test_recombination_map.txt',
+                              '--rate-map', '../garbo/map.pkl',
+                              # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--demography', 'ms.txt.demo.csv',
+                              '--ne', '1e5',
                               '--out', '../garbo/test5.vcf'])
     run(args)

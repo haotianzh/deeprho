@@ -126,7 +126,8 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     model_large = tf.keras.models.load_model(model_large_path)
     logger.info('predicting')
     rates = model_fine.predict(x, verbose=0)
-    rates_large = model_large.predict(x, verbose=0) * CONFIG.SCALE_FACTOR
+    # rates_large = model_large.predict(x, verbose=0) * CONFIG.SCALE_FACTOR
+    rates_large = np.exp(model_large.predict(x, verbose=0))
     scaled_rates, _, __ = utils.stat(rates, haplotype.positions,
                                sequence_length=sequence_length,
                                bin_width=resolution,
@@ -221,17 +222,17 @@ if __name__ == '__main__':
     gt_args(parser)
     args = parser.parse_args(['--file', '../garbo/test5.vcf',
                               '--ploidy', '2',
-                              # '--ne', '138482',
+                              '--ne', '100000',
                               # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--demography', 'ms.txt.demo.csv',
+                              '--m1', '../models/model_fine.h5',
+                              '--m2', '../models/model_large.h5',
                               # '--m1', '../models/model_fine.h5',
-                              # '--m2', '../models/model_large.h5',
-                              '--m1', '../data/models/model_epoch_50.h5',
-                              '--m2', '../data/models2/model_epoch_10.h5',
+                              # '--m2', '../garbo/model_epoch_153.h5',
                               # '--m1', '../models/model_epoch_99.hdf5',
                               # '--m2', '../models/model_epoch_123.hdf5',
                               # '--ss', '20',
-                              # '--res', '1e3',
+                              '--res', '1e3',
                               # '--length', '1e5',
                               '--plot',
                               # '--savenp',
