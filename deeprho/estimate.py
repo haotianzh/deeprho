@@ -111,13 +111,13 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
             _slices.append(global_genealogies[i: i+window_size])
     # calculate distance
     logger.info('calculating distances')
-    npop = n_pop * ploidy
+    n_hap = n_pop * ploidy
     lds = utils.linkage_disequilibrium(haplotypes)
     rfs = utils.rf_dist(_slices, num_thread=num_thread)
     tris = utils.triplet_dist(_slices, num_thread=num_thread)
     lds = np.expand_dims(np.array(lds, np.float32), axis=-1)
-    rfs = np.expand_dims(np.array(rfs, np.float32), axis=-1) / (2*(npop-3))
-    tris = np.expand_dims(np.array(tris, np.float32), axis=-1) / (npop*(npop-1)*(npop-2)/6)
+    rfs = np.expand_dims(np.array(rfs, np.float32), axis=-1) / (2*(n_hap-3))
+    tris = np.expand_dims(np.array(tris, np.float32), axis=-1) / (n_hap*(n_hap-1)*(n_hap-2)/6)
     x = np.concatenate([lds, rfs, tris], axis=-1)
     # two-stages model
     if sequence_length is None:
