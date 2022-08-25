@@ -111,12 +111,13 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
             _slices.append(global_genealogies[i: i+window_size])
     # calculate distance
     logger.info('calculating distances')
+    npop = n_pop * ploidy
     lds = utils.linkage_disequilibrium(haplotypes)
     rfs = utils.rf_dist(_slices, num_thread=num_thread)
     tris = utils.triplet_dist(_slices, num_thread=num_thread)
     lds = np.expand_dims(np.array(lds, np.float32), axis=-1)
-    rfs = np.expand_dims(np.array(rfs, np.float32), axis=-1) / (2*(n_pop-3))
-    tris = np.expand_dims(np.array(tris, np.float32), axis=-1) / (n_pop*(n_pop-1)*(n_pop-2)/6)
+    rfs = np.expand_dims(np.array(rfs, np.float32), axis=-1) / (2*(npop-3))
+    tris = np.expand_dims(np.array(tris, np.float32), axis=-1) / (npop*(npop-1)*(npop-2)/6)
     x = np.concatenate([lds, rfs, tris], axis=-1)
     # two-stages model
     if sequence_length is None:
@@ -126,8 +127,8 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     model_large = tf.keras.models.load_model(model_large_path)
     logger.info('predicting')
     rates = model_fine.predict(x, verbose=0)
-    # rates_large = model_large.predict(x, verbose=0) * CONFIG.SCALE_FACTOR
-    rates_large = np.exp(model_large.predict(x, verbose=0))
+    rates_large = model_large.predict(x, verbose=0) * CONFIG.SCALE_FACTOR
+    # rates_large = np.exp(model_large.predict(x, verbose=0))
     scaled_rates, _, __ = utils.stat(rates, haplotype.positions,
                                sequence_length=sequence_length,
                                bin_width=resolution,
@@ -144,7 +145,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
                                      ne=ne)
     # r_fine = get_deeprho_map(scaled_rates, _, length=sequence_length, )#head=haplotype.positions[0])
     # r_large = get_deeprho_map(scaled_rates_large, _, length=sequence_length, )# head=haplotype.positions[0])
-    r_fine = get_deeprho_map_1(scaled_rates, _)
+    r_fine = get_deeprho_map_1(scaled_rates_large, _)
     r_large = get_deeprho_map_1(scaled_rates_large, _)
     r_fine[r_fine>threshold] = r_large[r_fine>threshold]
     return r_fine
@@ -222,13 +223,15 @@ if __name__ == '__main__':
     gt_args(parser)
     args = parser.parse_args(['--file', '../garbo/test5.vcf',
                               '--ploidy', '2',
-                              '--ne', '100000',
+                              '--ne', '69241',
                               # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--demography', 'ms.txt.demo.csv',
-                              '--m1', '../models/model_fine.h5',
-                              '--m2', '../models/model_large.h5',
                               # '--m1', '../models/model_fine.h5',
-                              # '--m2', '../garbo/model_epoch_153.h5',
+                              '--m2', '../models/model_large.h5',
+                              '--m1', '../garbo/model_epoch_199.h'
+                                      ''
+                                      '5',
+                              # '--m2', '../garbo/model_epoch_148.h5',
                               # '--m1', '../models/model_epoch_99.hdf5',
                               # '--m2', '../models/model_epoch_123.hdf5',
                               # '--ss', '20',
