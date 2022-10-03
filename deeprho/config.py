@@ -15,7 +15,7 @@ class CONFIG:
     GENERATION = 20 # Years per generation
     EFFECTIVE_POPULATION_SIZE = 5e4   # Diploid effective population size
     PLOIDY = 2  # Diploid as default
-    SCALE_FACTOR = 1000   # Normalizing factor for scaled rho to speed up training,\
+    SCALE_FACTOR = 10   # Normalizing factor for scaled rho to speed up training,\
                         # in training set and test set, rhos are divided by this factor
 
     # estimate.py

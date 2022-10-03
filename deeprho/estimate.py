@@ -13,7 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from deeprho import LazyLoader
 from deeprho.config import CONFIG
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+from time import time
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf = LazyLoader('tensorflow')
 utils = LazyLoader('deeprho.popgen.utils')
 logger = logging.getLogger(__name__)
@@ -111,7 +112,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
             _slices.append(global_genealogies[i: i+window_size])
     # calculate distance
     logger.info('calculating distances')
-    n_hap = n_pop * ploidy
+    n_hap = n_pop
     lds = utils.linkage_disequilibrium(haplotypes)
     rfs = utils.rf_dist(_slices, num_thread=num_thread)
     tris = utils.triplet_dist(_slices, num_thread=num_thread)
@@ -145,7 +146,7 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
                                      ne=ne)
     # r_fine = get_deeprho_map(scaled_rates, _, length=sequence_length, )#head=haplotype.positions[0])
     # r_large = get_deeprho_map(scaled_rates_large, _, length=sequence_length, )# head=haplotype.positions[0])
-    r_fine = get_deeprho_map_1(scaled_rates_large, _)
+    r_fine = get_deeprho_map_1(scaled_rates, _)
     r_large = get_deeprho_map_1(scaled_rates_large, _)
     r_fine[r_fine>threshold] = r_large[r_fine>threshold]
     return r_fine
@@ -221,16 +222,17 @@ def gt_args(parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
-    args = parser.parse_args(['--file', '../garbo/test5.vcf',
+    logging.getLogger("tensorflow").setLevel(logging.ERROR)
+    args = parser.parse_args([
+                                # '--file', '../examples/data.vcf',
+                              '--file', '../garbo/test5.vcf',
                               '--ploidy', '2',
-                              '--ne', '69241',
+                              '--ne', '50000',
                               # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--demography', 'ms.txt.demo.csv',
                               # '--m1', '../models/model_fine.h5',
                               '--m2', '../models/model_large.h5',
-                              '--m1', '../garbo/model_epoch_199.h'
-                                      ''
-                                      '5',
+                              '--m1', '../models/model_fine.h5',
                               # '--m2', '../garbo/model_epoch_148.h5',
                               # '--m1', '../models/model_epoch_99.hdf5',
                               # '--m2', '../models/model_epoch_123.hdf5',

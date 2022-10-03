@@ -67,8 +67,8 @@ if __name__ == '__main__':
                               # '--mutation-rate', '2.5e-8',
                               # '--rate-map', '../examples/test_recombination_map.txt',
                               '--rate-map', '../garbo/map.pkl',
-                              '--demography', '../examples/ACB_pop_sizes.csv',
+                              # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--demography', 'ms.txt.demo.csv',
-                              # '--ne', '1e5',
+                              '--ne', '50000',
                               '--out', '../garbo/test5.vcf'])
     run(args)
