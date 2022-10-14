@@ -41,10 +41,9 @@ setup(
                        "scikit-learn>=0.23.1",
                        "scipy>=1.6.2",
                        "tskit>=0.3.5",
-                       "tensorflow>=2.4.0",
                        "coloredlogs"
                        ],
-    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf"]},
+    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf", "tensorflow"]},
     keywords= "population genetics, recombination, algorithm",
     classifiers=CLASSIFIERS
 )

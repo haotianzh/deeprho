@@ -9,15 +9,44 @@ import argparse
 import pathlib
 import coloredlogs
 import logging
+import pickle
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from deeprho import LazyLoader
 from deeprho.config import CONFIG
-from time import time
+# from deeprho.popgen import utils
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf = LazyLoader('tensorflow')
 utils = LazyLoader('deeprho.popgen.utils')
 logger = logging.getLogger(__name__)
+
+
+def adjust(rf):
+    rf_temp = rf.copy().reshape(-1)
+    bg_avg = rf_temp.mean()
+    hotspot_multiplicity = 1
+    threshold = bg_avg * hotspot_multiplicity
+    i = 0
+    while i < len(rf_temp):
+        rr = rf_temp[i]
+        if rr >= 0:
+            # edge up
+            j = 1
+            while i+j < len(rf_temp) and rf_temp[i+j] >= rr:
+                rr = rf_temp[i+j]
+                j += 1
+            rf_temp[i:i+j-1] = rf_temp[i] # or set to bg_avg
+            pid, pval = i+j-1, rf_temp[i+j-1]
+            # edge down
+            while i+j < len(rf_temp) and rf_temp[i+j] < rr and rf_temp[i+j] >= threshold:
+                rr = rf_temp[i+j]
+                j += 1
+            rf_temp[pid: i+j] = pval
+            i = i+j
+        else:
+            i += 1
+    return rf_temp
 
 
 def get_deeprho_map(rates, bounds, length):
@@ -63,6 +92,11 @@ def load_data(file):
     return _extensions[ext](file)
 
 
+def remove_overlap(rates, lefts, rights):
+    rights[:-1] = lefts[1:]
+    return rates, lefts, rights
+
+
 def output(rates, begin, out_name):
     with open(out_name, 'w') as out:
         out.write('Start\tEnd\tRate')
@@ -72,6 +106,21 @@ def output(rates, begin, out_name):
                 out.write(f'\n{start+begin}\t{i+begin}\t{rates[start]}')
                 start = i
     print(f"result is saved as '{os.path.abspath(out_name)}'")
+
+
+def output2(rates, lefts, rights, out_name):
+    with open(out_name, 'w') as out:
+        out.write('Start\tEnd\tRate')
+        for rate, left, right in zip(rates, lefts, rights):
+            out.write(f'{left}\t{right}\t{rate}\n')
+    print(f"result is saved as '{os.path.abspath(out_name)}'")
+
+
+def to_numpy(rates, lefts, rights):
+    arr = np.zeros(int(rights[-1] - lefts[1]))
+    for rate, left, right in zip(rates, lefts, rights):
+        arr[left: right] = rate
+    return arr
 
 
 def plot(rates, begin, threshold, out_name):
@@ -86,9 +135,27 @@ def plot(rates, begin, threshold, out_name):
     print(f"figure is saved as '{os.path.abspath(out_name)}'")
 
 
-def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_size=50,
-             sequence_length=None, global_window_size=1000, n_pop=100, ploidy=1, ne=1e5,
-             resolution=1e4, threshold=5e-8, num_thread=4):
+def plot2(rates, lefts, rights, threshold, out_name):
+    plt.figure(figsize=(12,6))
+    plt.title('deeprho estimates')
+    plt.xlabel('bp')
+    plt.ylabel('recombination rate')
+    pts_x, pts_y = [], []
+    for rate, left, right in zip(rates, lefts, rights):
+        pts_x.append(left)
+        pts_x.append(right-1)
+        pts_y.append(rate)
+        pts_y.append(rate)
+    plt.plot(pts_x, pts_y, label='deeprho')
+    plt.axhline(y=threshold, color='r', linestyle='--', label='hotspot threshold')
+    plt.legend()
+    plt.savefig(out_name, dpi=100)
+    print(f"figure is saved as '{os.path.abspath(out_name)}'")
+
+
+def estimate(haplotype, model_fine_path, model_large_path, table_constant, table,
+             window_size=50, step_size=50, sequence_length=None, global_window_size=1000,
+             n_pop=100, ploidy=1, ne=1e5, resolution=1e4, threshold=100, num_thread=8):
     haplotype = utils.filter_none_mutation(haplotype)
     haplotypes = utils.sliding_windows(haplotype,
                                  window_size=window_size,
@@ -130,33 +197,44 @@ def estimate(haplotype, model_fine_path, model_large_path, window_size=50, step_
     rates = model_fine.predict(x, verbose=0)
     rates_large = model_large.predict(x, verbose=0) * CONFIG.SCALE_FACTOR
     # rates_large = np.exp(model_large.predict(x, verbose=0))
-    scaled_rates, _, __ = utils.stat(rates, haplotype.positions,
-                               sequence_length=sequence_length,
-                               bin_width=resolution,
-                               window_size=window_size,
-                               step_size=step_size,
-                               ploidy=ploidy,
-                               ne=ne)
-    scaled_rates_large, _, __ = utils.stat(rates_large, haplotype.positions,
-                                     sequence_length=sequence_length,
-                                     bin_width=resolution,
-                                     window_size=window_size,
-                                     step_size=step_size,
-                                     ploidy=ploidy,
-                                     ne=ne)
+    # scaled_rates, _, __ = utils.stat(rates, haplotype.positions,
+    #                            sequence_length=sequence_length,
+    #                            bin_width=resolution,
+    #                            window_size=window_size,
+    #                            step_size=step_size,
+    #                            ploidy=ploidy,
+    #                            ne=ne)
+    # scaled_rates_large, _, __ = utils.stat(rates_large, haplotype.positions,
+    #                                  sequence_length=sequence_length,
+    #                                  bin_width=resolution,
+    #                                  window_size=window_size,
+    #                                  step_size=step_size,
+    #                                  ploidy=ploidy,
+    #                                  ne=ne)
     # r_fine = get_deeprho_map(scaled_rates, _, length=sequence_length, )#head=haplotype.positions[0])
     # r_large = get_deeprho_map(scaled_rates_large, _, length=sequence_length, )# head=haplotype.positions[0])
-    r_fine = get_deeprho_map_1(scaled_rates, _)
-    r_large = get_deeprho_map_1(scaled_rates_large, _)
-    r_fine[r_fine>threshold] = r_large[r_fine>threshold]
-    return r_fine
+    # r_fine = get_deeprho_map_1(scaled_rates, _)
+    # r_large = get_deeprho_map_1(scaled_rates_large, _)
+    # r_fine[r_fine>threshold] = r_large[r_fine>threshold]
+    mask = rates > threshold
+    rates[mask] = rates_large[mask]
+    rs, lefts, rights = utils.convert2r(table_constant, table, rates, np.array(haplotype.positions),
+                                        window_size=window_size, step_size=step_size)
+    rs, lefts, rights = remove_overlap(adjust(rs), lefts, rights)
+    return rs, lefts, rights
 
 
 def run(args):
+    # check input file
     assert args.file is not None, f'no input provided.'
+    # check model specification & model existence
     assert args.m1 is not None and args.m2 is not None, f'no specified models, --m1 and --m2 should be specified.'
     assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
-
+    # check table files
+    assert args.constant_table is not None, f'no prebuilt table specified, use --constant-table.'
+    assert os.path.exists(args.constant_table), f'prebuilt table file not found.'
+    if args.table is not None:
+        assert os.path.exists(args.table), f'table file not found'
     if args.verbose:
         coloredlogs.install(logger=logger, level='INFO', field_styles=dict(
             asctime={"color": 2},
@@ -164,6 +242,15 @@ def run(args):
             levelname={"color": 3},
             programname={"color": 1}
         ),  fmt='%(asctime)s [deeprho_v2] %(programname)s %(levelname)s - %(message)s')
+    if args.table is not None:
+        logger.info(f'loading table file from {args.table}')
+        with open(args.table, 'rb') as f:
+            table = pickle.load(f)
+    else:
+        logger.info(f'no table file provided, generating lookup table.')
+        table = utils.get_lookup_table(population_size=args.ne, demography=args.demography,
+                                       ploidy=args.ploidy, num_thread=args.num_thread)
+
     logger.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)
     logger.debug(f'data: {haplotype.nsites} SNPs, {haplotype.nsamples} individuals')
@@ -173,31 +260,41 @@ def run(args):
     step_size = args.ss
     if step_size is None:
         step_size = args.ws
-    ne = args.ne
-    if args.demography is not None:
-        ne = utils.calculate_average_ne(args.demography)
+
+    # if args.demography is not None:
+    #     ne = utils.calculate_average_ne(args.demography)
     paras = {
         'haplotype': haplotype,
         'num_thread': args.num_thread,
         'sequence_length': length,
-        'ne': ne,
+        'ne': args.ne,
         'global_window_size': args.gws,
         'window_size': args.ws,
         'step_size': step_size-1,
-        'threshold': args.threshold,
+        'threshold': 100,
         'model_fine_path': args.m1,
         'model_large_path': args.m2,
         'ploidy': args.ploidy,
         'n_pop': haplotype.nsamples,
-        'resolution': args.res
+        'resolution': args.res,
+        'table_constant': pd.read_csv(args.constant_table),
+        'table': table
     }
-    rates = estimate(**paras)
-    output(rates, haplotype.positions[0], args.file + '.rate.txt')
+    # rates = estimate(**paras)
+    # output(rates, haplotype.positions[0], args.file + '.rate.txt')
+    # if args.savenp:
+    #     np.save(args.file + '.rate.npy', rates)
+    #     print(f"numpy object is saved as '{os.path.abspath(args.file + '.rate.npy')}'")
+    # if args.plot:
+    #     plot(rates, haplotype.positions[0], args.threshold, args.file + '.rate.png')
+    rs, lefts, rights = estimate(**paras)
+    output2(rs, lefts, rights, f'{args.file}.rate.txt')
     if args.savenp:
-        np.save(args.file + '.rate.npy', rates)
-        print(f"numpy object is saved as '{os.path.abspath(args.file + '.rate.npy')}'")
+        rs_npy = to_numpy(rs, lefts, rights)
+        np.save(f'{args.file}.rate.npy', rs_npy)
+        print(f"numpy object is saved as '{os.path.abspath(f'{args.file}.rate.npy')}'")
     if args.plot:
-        plot(rates, haplotype.positions[0], args.threshold, args.file + '.rate.png')
+        plot2(rs, lefts, rights, args.threshold, f'{args.file}.rate.png')
 
 
 def gt_args(parser):
@@ -214,6 +311,8 @@ def gt_args(parser):
     parser.add_argument('--res', type=float, help='resolution(bp)', default=CONFIG.RESOLUTION)
     parser.add_argument('--m1', type=str, help='fine-model path', default=CONFIG.MODEL_FINE)
     parser.add_argument('--m2', type=str, help='large-model path', default=CONFIG.MODEL_LARGE)
+    parser.add_argument('--constant-table', type=str, help='constant lookup table', default=CONFIG.CONSTANT_TABLE)
+    parser.add_argument('--table', type=str, help='lookup table generated under given demography', default=CONFIG.TABLE)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
     parser.add_argument('--verbose', help='show loggings', action='store_true')
@@ -229,17 +328,9 @@ if __name__ == '__main__':
                               '--ploidy', '2',
                               '--ne', '50000',
                               # '--demography', '../examples/ACB_pop_sizes.csv',
-                              # '--demography', 'ms.txt.demo.csv',
+                              # '--m2', '../models/model_large.h5',
                               # '--m1', '../models/model_fine.h5',
-                              '--m2', '../models/model_large.h5',
-                              '--m1', '../models/model_fine.h5',
-                              # '--m2', '../garbo/model_epoch_148.h5',
-                              # '--m1', '../models/model_epoch_99.hdf5',
-                              # '--m2', '../models/model_epoch_123.hdf5',
-                              # '--ss', '20',
                               '--res', '1e3',
-                              # '--length', '1e5',
                               '--plot',
-                              # '--savenp',
                               '--verbose'])
     run(args)

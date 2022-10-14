@@ -8,7 +8,9 @@ import multiprocessing as mp
 from time import time
 import pickle
 
-rho_min = 500
+
+# create lookup table for rho in range [0, 1000]
+rho_min = 0
 rho_max = 1000  # 896 is the max in train set.
 
 
@@ -57,5 +59,4 @@ if __name__ ==  '__main__':
     end = time()
     with open('../table/table_500_1000.pkl', 'wb') as out:
         pickle.dump(table, out)
-
     print(end - start)

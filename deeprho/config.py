@@ -9,7 +9,7 @@ class CONFIG:
         Default settings in deeprho.
         See https://github.com/haotianzh/deeprho_v2/blob/main/README.md
     """
-
+    PKG_DIR = os.path.dirname(__file__)
     # global default settings
     NUM_THREAD = os.cpu_count() // 2    # Take a half cores
     GENERATION = 20 # Years per generation
@@ -25,8 +25,10 @@ class CONFIG:
     STEP_SIZE = WINDOW_SIZE # Step size (sliding window algorithm)
     RESOLUTION = 1e4    # Rate map resolution, deeprho will estimate rates at 10kb level
     LENGTH = None   # Genome length, None means it will be inferred from data
-    MODEL_FINE = None   # Fine model file path (should be sth like '.../models/your_model_fine_name.h5')
-    MODEL_LARGE = None  # Large model file path (should be sth like '.../models/your_model_large_name.h5')
+    MODEL_FINE = os.path.join(PKG_DIR, 'static', 'model_fine.h5')   # Fine model file path (should be sth like '.../models/your_model_fine_name.h5')
+    MODEL_LARGE = os.path.join(PKG_DIR, 'static', 'model_large.h5')  # Large model file path (should be sth like '.../models/your_model_large_name.h5')
+    CONSTANT_TABLE = os.path.join(PKG_DIR, 'static', 'table_0_1000.csv')
+    TABLE = None
 
     # dpp.py
     N_SAMPLE = 200  # Sampling points uniformly distributed between R_MIN and R_MAX
