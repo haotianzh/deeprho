@@ -20,12 +20,13 @@ setup(
     name="deeprho",
     version=__version__,
     author="Haotian Zhang, Yufeng Wu",
-    author_email="haotianzh@uconn.edu, yufeng.wu@uconn.edu",
+    author_email="haotianzh at uconn dot edu, yufeng.wu at uconn dot edu",
     long_description="deeprho is a software used for estimating recombination rate given population genetic data",
     url="https://github.com/haotianzh/deeprho_v2",
     packages=find_packages(),
     package_data={
-        "deeprho.popgen": ["libs/*.jar"]
+        "deeprho.popgen": ["libs/*.jar"],
+        "deeprho": ["static/*.h5", "static/*.csv"]
     },
     entry_points={
         "console_scripts": ["deeprho = deeprho.entry:main"]
@@ -43,7 +44,7 @@ setup(
                        "tskit>=0.3.5",
                        "coloredlogs"
                        ],
-    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf", "tensorflow"]},
+    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf", "tensorflow", "tensorflow-gpu"]},
     keywords= "population genetics, recombination, algorithm",
     classifiers=CLASSIFIERS
 )

@@ -1,9 +1,7 @@
 """
+    Author: Haotian Z
     Estimator of recombination rate. Be capable to scale properly even under demography.
-    Author: ZHT
 """
-
-
 import os
 import argparse
 import pathlib
@@ -225,16 +223,6 @@ def estimate(haplotype, model_fine_path, model_large_path, table_constant, table
 
 
 def run(args):
-    # check input file
-    assert args.file is not None, f'no input provided.'
-    # check model specification & model existence
-    assert args.m1 is not None and args.m2 is not None, f'no specified models, --m1 and --m2 should be specified.'
-    assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
-    # check table files
-    assert args.constant_table is not None, f'no prebuilt table specified, use --constant-table.'
-    assert os.path.exists(args.constant_table), f'prebuilt table file not found.'
-    if args.table is not None:
-        assert os.path.exists(args.table), f'table file not found'
     if args.verbose:
         coloredlogs.install(logger=logger, level='INFO', field_styles=dict(
             asctime={"color": 2},
@@ -242,14 +230,33 @@ def run(args):
             levelname={"color": 3},
             programname={"color": 1}
         ),  fmt='%(asctime)s [deeprho_v2] %(programname)s %(levelname)s - %(message)s')
-    if args.table is not None:
+
+    # check input file
+    assert args.file, f'no input provided.'
+    # check model specification & model existence
+    assert args.m1 and args.m2, f'no specified models, --m1 and --m2 should be specified.'
+    assert os.path.exists(args.m1) and os.path.exists(args.m2), f'model file not found.'
+    # check table files
+    assert args.constant_table, f'no prebuilt table specified, use --constant-table.'
+    assert os.path.exists(args.constant_table), f'prebuilt table file not found.'
+    if args.table:
+        assert os.path.exists(args.table), f'table file not found.'
         logger.info(f'loading table file from {args.table}')
         with open(args.table, 'rb') as f:
             table = pickle.load(f)
     else:
-        logger.info(f'no table file provided, generating lookup table.')
-        table = utils.get_lookup_table(population_size=args.ne, demography=args.demography,
-                                       ploidy=args.ploidy, num_thread=args.num_thread)
+        if args.demography:
+            assert os.path.exists(args.demography), f'demography {args.demography} not found.'
+            demography = utils.load_demography_from_file(args.demography)
+            logger.info(f'no table file provided, generating lookup table.')
+            table = utils.get_lookup_table(population_size=args.ne, demography=demography,
+                                           ploidy=args.ploidy, num_thread=args.num_thread)
+        elif args.ne:
+            table = utils.get_lookup_table(population_size=args.ne, demography=None,
+                                           ploidy=args.ploidy, num_thread=args.num_thread)
+        else:
+            raise Exception('either ne or demography should be specified.')
+
 
     logger.info(f'loading data from {args.file}')
     haplotype = load_data(args.file)
@@ -300,7 +307,7 @@ def run(args):
 def gt_args(parser):
     parser.add_argument('--file', type=str, help='filename')
     parser.add_argument('--num-thread', type=int, help='number of threads', default=CONFIG.NUM_THREAD)
-    parser.add_argument('--ne', type=float, help='effective population size', default=CONFIG.EFFECTIVE_POPULATION_SIZE)
+    parser.add_argument('--ne', type=float, help='effective population size', default=None)
     parser.add_argument('--demography', help='demography history', default=CONFIG.DEMOGRAPHY)
     parser.add_argument('--length', type=float, help='genome length', default=CONFIG.LENGTH)
     parser.add_argument('--ploidy', type=int, help='ploidy (default 2)', default=CONFIG.PLOIDY)
@@ -312,7 +319,7 @@ def gt_args(parser):
     parser.add_argument('--m1', type=str, help='fine-model path', default=CONFIG.MODEL_FINE)
     parser.add_argument('--m2', type=str, help='large-model path', default=CONFIG.MODEL_LARGE)
     parser.add_argument('--constant-table', type=str, help='constant lookup table', default=CONFIG.CONSTANT_TABLE)
-    parser.add_argument('--table', type=str, help='lookup table generated under given demography', default=CONFIG.TABLE)
+    parser.add_argument('--table', type=str, help='lookup table generated under given demography', default=None)
     parser.add_argument('--plot', help='plot or not', action='store_true')
     parser.add_argument('--savenp', help='save as numpy object', action='store_true')
     parser.add_argument('--verbose', help='show loggings', action='store_true')
@@ -330,6 +337,7 @@ if __name__ == '__main__':
                               # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--m2', '../models/model_large.h5',
                               # '--m1', '../models/model_fine.h5',
+                              '--ss', '5',
                               '--res', '1e3',
                               '--plot',
                               '--verbose'])

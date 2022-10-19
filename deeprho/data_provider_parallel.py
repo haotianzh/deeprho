@@ -124,15 +124,15 @@ def run(args):
 
     
 def gt_args(parser):
-    parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=CONFIG.N_SAMPLE)
-    parser.add_argument('--ndraw', type=int, help='number of draws per sample', default=CONFIG.N_DRAW)
-    parser.add_argument('--npop', type=int, help='number of individual', default=CONFIG.N_POP)
+    parser.add_argument('--nsam', type=int, help='number of sampling for rhos', default=CONFIG.DP_N_SAMPLE)
+    parser.add_argument('--ndraw', type=int, help='number of draws per sample', default=CONFIG.DP_N_DRAW)
+    parser.add_argument('--npop', type=int, help='number of individual', default=CONFIG.DP_N_POP)
     parser.add_argument('--ne', type=float, help='effective population size', default=CONFIG.EFFECTIVE_POPULATION_SIZE)
     parser.add_argument('--ploidy', type=int, help='ploidy', default=CONFIG.PLOIDY)
-    parser.add_argument('--mutation-rate', type=float, help='mutation rate', default=CONFIG.MUTATION_RATE)
+    parser.add_argument('--mutation-rate', type=float, help='mutation rate', default=CONFIG.DP_MUTATION_RATE)
     parser.add_argument('--demography', type=str, help='demography file path', default=CONFIG.DEMOGRAPHY)
-    parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=CONFIG.R_MIN)
-    parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=CONFIG.R_MAX)
+    parser.add_argument('--rmin', type=float, help='minimum recombination rate', default=CONFIG.DP_R_MIN)
+    parser.add_argument('--rmax', type=float, help='maximum recombination rate', default=CONFIG.DP_R_MAX)
     parser.add_argument('--num-thread', type=int, help='number of threads', default=CONFIG.NUM_THREAD)
     parser.add_argument('--out', type=str, help='output path')
     parser.add_argument('--verbose', help='show loggings', action='store_true')

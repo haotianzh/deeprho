@@ -1,11 +1,13 @@
+"""
+    Author: Haotian Z
+    Simulate a test case
+"""
 import argparse
 import os
 import logging
 import pickle
 import multiprocessing as mp
 from deeprho import popgen
-from deeprho.data_provider_parallel import global_window_size, window_size
-
 
 def build_configuration(args):
     configuration = {}
@@ -14,8 +16,8 @@ def build_configuration(args):
     if args.rate_map is not None:
         # test only
         map = pickle.load(open(args.rate_map, 'rb'))
-        # map = popgen.utils.load_recombination_map_from_file(args.rate_map)
-        configuration['recombination_rate'] = map
+        map = popgen.utils.load_recombination_map_from_file(args.rate_map)
+        # configuration['recombination_rate'] = map
         configuration['sequence_length'] = map.sequence_length
     else:
         configuration['recombination_rate'] = args.recombination_rate
@@ -34,10 +36,10 @@ def simulate_single_genome(configs, args):
 
 
 def run(args):
-    assert args.out is not None, f'no output name.'
-    if args.demography is not None:
+    assert args.out, f'no output name.'
+    if args.demography:
         assert os.path.exists(args.demography)
-    if args.rate_map is not None:
+    if args.rate_map:
         assert os.path.exists(args.rate_map)
     configs = build_configuration(args)
     genome = simulate_single_genome(configs, args)
@@ -70,5 +72,5 @@ if __name__ == '__main__':
                               # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--demography', 'ms.txt.demo.csv',
                               '--ne', '50000',
-                              '--out', '../garbo/test5.vcf'])
+                              '--out', '../garbo/test6.vcf'])
     run(args)

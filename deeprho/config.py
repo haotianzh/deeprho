@@ -31,16 +31,26 @@ class CONFIG:
     TABLE = None
 
     # dpp.py
-    N_SAMPLE = 200  # Sampling points uniformly distributed between R_MIN and R_MAX
-    N_DRAW = 5  # Sampling times at a particular rate
-    N_POP = 50  # Number of individuals in simulation
-    MUTATION_RATE = 2.5e-8  # Mutation rate per site per generation
+    DP_N_SAMPLE = 200  # Sampling points uniformly distributed between R_MIN and R_MAX
+    DP_N_DRAW = 5  # Sampling times at a particular rate
+    DP_N_POP = 50  # Number of individuals in simulation
+    DP_MUTATION_RATE = 2.5e-8  # Mutation rate per site per generation
     DEMOGRAPHY = None   # Demography settings, see Docs
-    R_MIN = 1e-9    # Minimum recombination rate to simulate
-    R_MAX = 5e-7    # Maximum recombination rate to simulate
+    DP_R_MIN = 1e-9    # Minimum recombination rate to simulate
+    DP_R_MAX = 5e-7    # Maximum recombination rate to simulate
+
+
 
     # TODO test_provider.py
-    # TODO retrain.py
+    # make_table.py
+    MT_R_MIN = 0
+    MT_R_MAX = 1e-6
+    MT_REPEAT = 50
+    MT_DRAW = 200
+    MT_SAMPLE = 50
+
+
+
 
 
 
