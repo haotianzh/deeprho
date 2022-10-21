@@ -21,7 +21,8 @@ try:
     import vcf
     use_pyvcf = True
 except:
-    logger.warning('PyVCF module not installed, use built-in VCF reader.')
+    pass
+    # logger.warning('PyVCF module not installed, use built-in VCF reader.')
 
 
 def check_file_existence(file):

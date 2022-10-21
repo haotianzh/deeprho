@@ -108,7 +108,7 @@ def output(rates, begin, out_name):
 
 def output2(rates, lefts, rights, out_name):
     with open(out_name, 'w') as out:
-        out.write('Start\tEnd\tRate')
+        out.write('Start\tEnd\tRate\n')
         for rate, left, right in zip(rates, lefts, rights):
             out.write(f'{left}\t{right}\t{rate}\n')
     print(f"result is saved as '{os.path.abspath(out_name)}'")
@@ -155,10 +155,12 @@ def estimate(haplotype, model_fine_path, model_large_path, table_constant, table
              window_size=50, step_size=50, sequence_length=None, global_window_size=1000,
              n_pop=100, ploidy=1, ne=1e5, resolution=1e4, threshold=100, num_thread=8):
     haplotype = utils.filter_none_mutation(haplotype)
+    # print(f'nsites: {haplotype.nsites}')
     haplotypes = utils.sliding_windows(haplotype,
                                  window_size=window_size,
                                  step_size=step_size,
                                  drop_last=True)
+    # print('nwins:', len(haplotypes))
     # infer genealogy with global window size as 1e3
     logger.info('inferring local genealogies')
     global_genealogies = []
@@ -277,7 +279,7 @@ def run(args):
         'ne': args.ne,
         'global_window_size': args.gws,
         'window_size': args.ws,
-        'step_size': step_size-1,
+        'step_size': step_size,
         'threshold': 100,
         'model_fine_path': args.m1,
         'model_large_path': args.m2,
@@ -331,14 +333,14 @@ if __name__ == '__main__':
     logging.getLogger("tensorflow").setLevel(logging.ERROR)
     args = parser.parse_args([
                                 # '--file', '../examples/data.vcf',
-                              '--file', '../garbo/test5.vcf',
+                              '--file', '../garbo/test7.vcf',
                               '--ploidy', '2',
-                              '--ne', '50000',
+                              '--table', 'yri_table',
+                              # '--ne', '50000',
                               # '--demography', '../examples/ACB_pop_sizes.csv',
                               # '--m2', '../models/model_large.h5',
                               # '--m1', '../models/model_fine.h5',
-                              '--ss', '5',
-                              '--res', '1e3',
+                              '--ss', '10',
                               '--plot',
                               '--verbose'])
     run(args)

@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='deeprho estimator')
     gt_args(parser)
     args = parser.parse_args([
-                              '--out', 'test_table',
+                              '--out', 'yri_table',
                               '--ploidy', '2',
-                              '--demography', '../examples/ACB_pop_sizes.csv'])
+                              '--demography', '../examples/YRI_pop_sizes.csv'])
     run(args)

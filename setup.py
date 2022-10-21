@@ -33,18 +33,19 @@ setup(
     },
     python_requires=">=3.7",
     # setup_requires=['setuptools==57.5.0'],
-    install_requires= ["h5py>=2.10.0",
+    install_requires= ["tensorflow-gpu",
+                       "h5py>=2.10.0",
                        "JPype1==1.3.0",
                        "matplotlib>=3.5.1",
                        "pandas>=1.0.5",
-                       "numpy>=1.19.2",
+                       "numpy>=1.19.5",
                        "pptree==3.1",
                        "scikit-learn>=0.23.1",
                        "scipy>=1.6.2",
                        "tskit>=0.3.5",
                        "coloredlogs"
                        ],
-    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf", "tensorflow", "tensorflow-gpu"]},
+    extras_require={"simulate": ["msprime>=1.0.0"], "estimate":["pyvcf"]},
     keywords= "population genetics, recombination, algorithm",
     classifiers=CLASSIFIERS
 )
