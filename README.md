@@ -71,7 +71,7 @@ Default output name is formatted as `<FILE>.rate[.txt|.png|.npy]` in the same di
 
 ### <a name='gpu'></a>GPU support
 1. First check if your graphics card is [CUDA-enabled](https://developer.nvidia.com/cuda-gpus).
-2. Check [compatibility table](https://www.tensorflow.org/install/source#gpu) to find appropriate python, tensorflow, CUDA, cuDNN version combo. (We test on tensorflow 2.4, CUDA 11.0 and cuDNN 8.0)
+2. Check [compatibility table](https://www.tensorflow.org/install/source#gpu) to find appropriate python, tensorflow, CUDA, cuDNN version combo. (We successfully test on tensorflow 2.4, CUDA 11.0 and cuDNN 8.0)
 3. Install `tensorflow-gpu` through `pip`: `pip install tensorflow-gpu==2.4.0`
 4. Install `cudatoolkit` and `cudnn`: `conda install cudnn=8.0.5.39 -c conda-forge` (installing `cudnn` will automatically install its corresponding `cudatoolkit`)
 5. To check if they work properly,
