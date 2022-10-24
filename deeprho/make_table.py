@@ -26,8 +26,8 @@ def run(args):
         'r_min': args.rmin,
         'r_max': args.rmax,
         'repeats': args.repeat,
-        'draws': args.ndraw,
-        'samples': args.sample
+        'draws': args.draw,
+        'samples': args.npop
     }
     table = utils.get_lookup_table(**paras)
     with open(args.out, 'wb') as out:
@@ -40,11 +40,11 @@ def gt_args(parser):
     parser.add_argument('--ne', type=float, help='effective population size', default=None)
     parser.add_argument('--demography', help='demography history', default=None)
     parser.add_argument('--ploidy', type=int, help='ploidy (default 2)', default=CONFIG.PLOIDY)
-    parser.add_argument('--sample', type=int, help='number of samples', default=CONFIG.MT_SAMPLE)
+    parser.add_argument('--npop', type=int, help='number of individuals', default=CONFIG.MT_SAMPLE)
     parser.add_argument('--rmin', type=float, help='min of recombination rate per base per generation', default=CONFIG.MT_R_MIN)
     parser.add_argument('--rmax', type=float, help='max of recombination rate per base per generation', default=CONFIG.MT_R_MAX)
     parser.add_argument('--repeat', type=int, help='number of repeats in simulation', default=CONFIG.MT_REPEAT)
-    parser.add_argument('--ndraw', type=int, help='number of draws', default=CONFIG.MT_DRAW)
+    parser.add_argument('--draw', type=int, help='number of draws', default=CONFIG.MT_DRAW)
     parser.add_argument('--out', type=str, help='table name', default=None)
     parser.add_argument('--verbose', help='show loggings', action='store_true')
 

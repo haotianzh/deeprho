@@ -22,7 +22,7 @@ class CONFIG:
     THRESHOLD = 5e-8    # Hotspot threshold above which is regarded as recombination hotspot
     GLOBAL_WINDOW_SIZE = 1000   # Window size used for inferring local genealogies
     WINDOW_SIZE = 50    # Window size used for estimating rates (sliding window algorithm)
-    STEP_SIZE = WINDOW_SIZE # Step size (sliding window algorithm)
+    STEP_SIZE = 25 # Step size (sliding window algorithm)
     RESOLUTION = 1e4    # Rate map resolution, deeprho will estimate rates at 10kb level
     LENGTH = None   # Genome length, None means it will be inferred from data
     MODEL_FINE = os.path.join(PKG_DIR, 'static', 'model_fine.h5')   # Fine model file path (should be sth like '.../models/your_model_fine_name.h5')

@@ -153,7 +153,7 @@ def plot2(rates, lefts, rights, threshold, out_name):
 
 def estimate(haplotype, model_fine_path, model_large_path, table_constant, table,
              window_size=50, step_size=50, sequence_length=None, global_window_size=1000,
-             n_pop=100, ploidy=1, ne=1e5, resolution=1e4, threshold=100, num_thread=8):
+             n_pop=100, ploidy=1, ne=1e5, threshold=100, num_thread=8):
     haplotype = utils.filter_none_mutation(haplotype)
     # print(f'nsites: {haplotype.nsites}')
     haplotypes = utils.sliding_windows(haplotype,
@@ -285,7 +285,6 @@ def run(args):
         'model_large_path': args.m2,
         'ploidy': args.ploidy,
         'n_pop': haplotype.nsamples,
-        'resolution': args.res,
         'table_constant': pd.read_csv(args.constant_table),
         'table': table
     }
@@ -317,7 +316,7 @@ def gt_args(parser):
     parser.add_argument('--gws', type=int, help='global window size', default=CONFIG.GLOBAL_WINDOW_SIZE)
     parser.add_argument('--ws', type=int, help='window size', default=CONFIG.WINDOW_SIZE)
     parser.add_argument('--ss', type=int, help='step size', default=CONFIG.STEP_SIZE)
-    parser.add_argument('--res', type=float, help='resolution(bp)', default=CONFIG.RESOLUTION)
+    # parser.add_argument('--res', type=float, help='resolution(bp)', default=CONFIG.RESOLUTION)
     parser.add_argument('--m1', type=str, help='fine-model path', default=CONFIG.MODEL_FINE)
     parser.add_argument('--m2', type=str, help='large-model path', default=CONFIG.MODEL_LARGE)
     parser.add_argument('--constant-table', type=str, help='constant lookup table', default=CONFIG.CONSTANT_TABLE)
