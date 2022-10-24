@@ -50,7 +50,7 @@ DeepRho constructs images from population genetic data and takes advantage of th
     # generate a test case under a given evolutionary setting
     deeprho test --demography examples/YRI_pop_sizes.csv --rate-map examples/test_recombination_map.txt --npop 50 --ploidy 2 --out test.vcf
     ```
-demography is a `.csv` file which contains at least two columns `x` (time) and `y`(size), `time` is measured in generation, see `examples/ACB_pop_sizes.csv` for example.
+  demography is a `.csv` file which contains at least three columns `label`, `x` (time) and `y`(size). `label` is the population name which should have only one population in a single file, `time` is measured in generation, see `examples/ACB_pop_sizes.csv` for example.
 
 
 ### Outputs
