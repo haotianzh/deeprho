@@ -71,7 +71,7 @@ Default output name is formatted as `<FILE>.rate[.txt|.png|.npy]` in the same di
     ```
 - `.png` file shows a simple plot of estimated recombination map.
 
-   <img src="examples/data.vcf.rate.png" alt="isolated" width="600" />
+   <img src="examples/example_YRI.vcf.rate.png" alt="isolated" width="600" />
 
 - `.npy` file stores a `ndarray` object recording recombination rate per base, the i-th element of the `ndarray` denotes the rate from base i to base (i+1).
 
