@@ -21,14 +21,13 @@ DeepRho constructs images from population genetic data and takes advantage of th
 - Device: [CUDA-Enabled GPU](https://developer.nvidia.com/cuda-gpus) (optional, default set to use CPU)
 
 ### Installations
-1. Clone from GitHub: `git clone https://github.com/haotianzh/deeprho_v2.git` or Download & unzip the file to your local directory.
-2. Enter the directory: `cd deeprho_v2`
+1. Clone from GitHub: `git clone https://github.com/haotianzh/deeprho_v2.git` or download & unzip the file to your local directory.
+2. Enter root directory: `cd deeprho_v2`
 3. Create a virtual environment through conda: `conda create -n deeprho python=3.7 openjdk=11 msprime`
 4. Activate conda environment: `conda activate deeprho`
 5. Install: `pip install .`
 6. Validate: `deeprho -v`
-
-[Optional] see [GPU support](#gpu) if you are seeking to use GPU
+7. [Optional] see [GPU support](#gpu) if you are seeking to use GPU
 
 
 ### Input Formats
