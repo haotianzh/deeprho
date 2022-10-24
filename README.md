@@ -37,18 +37,18 @@ DeepRho constructs images from population genetic data and takes advantage of th
 ### Usages (Examples)
 - #### [deeprho maketable](#maketable)
     ```python
-    # calculate the lookup table based on a user provided demography 
-    deeprho maketable --demography examples/ACB_pop_sizes.csv --out ACB_pop_table
+    # save a precalculated lookup table for a user provided demography 
+    deeprho maketable --demography examples/YRI_pop_sizes.csv --out YRI_pop_table
   ```
 - #### [deeprho estimate](#estimate)
     ```python
     # estimate recombination rates
-    deeprho estimate --file examples/data.vcf --ploidy 2 --table ACB_pop_table --plot --verbose --num-thread 8
+    deeprho estimate --file examples/example_YRI.vcf --ploidy 2 --table YRI_pop_table --num-thread 8 --plot --verbose 
   ```
 - #### [deeprho test](#test)
     ```python
     # generate a test case under a given evolutionary setting
-    deeprho test --demography examples/ACB_pop_sizes.csv --rate-map examples/test_recombination_map.txt --npop 50 --ploidy 2 --out test.vcf
+    deeprho test --demography examples/YRI_pop_sizes.csv --rate-map examples/test_recombination_map.txt --npop 50 --ploidy 2 --out test.vcf
     ```
 demography is a `.csv` file which contains at least two columns `x` (time) and `y`(size), `time` is measured in generation, see `examples/ACB_pop_sizes.csv` for example.
 
