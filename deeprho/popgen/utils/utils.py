@@ -102,7 +102,7 @@ def get_lookup_table(population_size=5e4, demography=None, samples=50, repeats=5
     }
     rates =  np.linspace(r_min, r_max, draws)
     ps = []
-    with mp.Pool(num_thread) as pool:
+    with mp.get_context('spawn').Pool() as pool:
         params = []
         for rate in rates:
             bc = configs.copy()
