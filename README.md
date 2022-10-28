@@ -76,16 +76,13 @@ Default output name is formatted as `<FILE>.rate[.txt|.png|.npy]` in the same di
 - `.npy` file stores a `ndarray` object recording recombination rate per base, the i-th element of the `ndarray` denotes the rate from base i to base (i+1).
 
 
-### <a name='gpu'></a>GPU Support
+### <a name='gpu'></a>GPU Support ([more](https://www.tensorflow.org/install/pip))
 1. First check if your graphics card is [CUDA-enabled](https://developer.nvidia.com/cuda-gpus).
 2. Check [compatibility table](https://www.tensorflow.org/install/source#gpu) to find appropriate python, tensorflow, CUDA, cuDNN version combo.
-4. Install `cudatoolkit` and `cudnn`: `conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0` 
-5. Validate GPU availability,
-   ```python
-    import tensorflow as tf
-    # if you can see your graphics card here, it works!
-    print(tf.config.experimental.list_physical_devices('GPU'))
-    ```
+3. Install `cudatoolkit` and `cudnn`: `conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0` 
+4. (For Linux) Set env: `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/` (have to do this step every time you restart the session)
+5. Verify install:
+  `python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"`
 
 ---
 ### Docs
